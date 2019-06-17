@@ -15,18 +15,22 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+<%@ page import="hu.dpc.poc.openbanking.accounts.GetAccountsList" %>
 <%@ page import="org.apache.commons.collections.CollectionUtils" %>
-<%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.identity.application.authentication.endpoint.util.Constants" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page import="java.util.stream.Stream" %>
-<%@include file="localize.jsp" %>
-<%@include file="init-url.jsp" %>
+<%@ include file="localize.jsp" %>
+<%@ include file="init-url.jsp" %>
 
 <%
+    String ACCOUNTS_SCOPE = "accounts";
+    boolean hasAccountsScope = false;
+
     String app = request.getParameter("application");
     String scopeString = request.getParameter("scope");
     boolean displayScopes = Boolean.parseBoolean(getServletContext().getInitParameter("displayScopes"));
@@ -37,13 +41,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%=AuthenticationEndpointUtil.i18n(resourceBundle, "wso2.identity.server")%></title>
-    
+    <title><%=AuthenticationEndpointUtil.i18n(resourceBundle, "wso2.identity.server")%>
+    </title>
+
     <link rel="icon" href="images/favicon.png" type="image/x-icon"/>
     <link href="libs/bootstrap_3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/Roboto.css" rel="stylesheet">
     <link href="css/custom-common.css" rel="stylesheet">
-    
+
     <!--[if lt IE 9]>
     <script src="js/html5shiv.min.js"></script>
     <script src="js/respond.min.js"></script>
@@ -51,6 +56,38 @@
 </head>
 
 <body>
+
+<script type="text/javascript">
+    // Report user approve
+    function reportUserApprove() {
+        console.log('Approved');
+        var respond = {status: 'approved', accounts: []};
+
+        var checkedAccounts = $(".accounts:checked");
+        var checkedAccountLength = checkedAccounts.length;
+        for (var i = 0; i < checkedAccountLength; i++) {
+            console.log(checkedAccounts[i].value);
+            respond.accounts.push(checkedAccounts[i].value);
+        }
+
+        $.ajax({
+            url: "reportAuthorizeResult", type: "POST",
+            data: respond,
+            success: function (result) {
+                console.log(result)
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+    }
+
+    // Report user deny
+    function reportUserDeny() {
+        console.log('Deny');
+    }
+</script>
+
 
 <script type="text/javascript">
     function approved() {
@@ -67,10 +104,13 @@
             }
         }
 
+        // Last action point, to catch event
+        reportUserApprove();
         document.getElementById("profile").submit();
     }
-    
+
     function deny() {
+        reportUserDeny();
         document.getElementById('consent').value = "deny";
         document.getElementById("profile").submit();
     }
@@ -81,20 +121,22 @@
     <div class="container-fluid"><br></div>
     <div class="container-fluid">
         <div class="pull-left brand float-remove-xs text-center-xs">
-            <a href="#">
+            <a href="#">oauth2_authz
                 <img src="images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
-                <h1><em><%=AuthenticationEndpointUtil.i18n(resourceBundle, "identity.server")%> </em></h1>
+                <h1><em><%=AuthenticationEndpointUtil.i18n(resourceBundle, "identity.server")%>
+                </em></h1>
             </a>
         </div>
     </div>
 </header>
 
+
 <!-- page content -->
 <div class="container-fluid body-wrapper">
-    
+
     <div class="row">
         <div class="col-md-12">
-            
+
             <!-- content -->
             <div class="container col-xs-10 col-sm-6 col-md-6 col-lg-5 col-centered wr-content wr-login col-centered">
                 <div>
@@ -102,71 +144,98 @@
                         <%=AuthenticationEndpointUtil.i18n(resourceBundle, "authorize")%>
                     </h2>
                 </div>
-                
+
                 <div class="boarder-all ">
                     <div class="clearfix"></div>
                     <div class="padding-double login-form">
                         <form action="<%=oauth2AuthorizeURL%>" method="post" id="profile" name="oauth2_authz"
-                              class="form-horizontal" >
-                            
+                              class="form-horizontal">
+
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <div class="alert alert-warning" role="alert">
                                     <p class="margin-bottom-double">
-                                        <strong><%=Encode.forHtml(request.getParameter("application"))%></strong>
+                                        <strong><%=Encode.forHtml(request.getParameter("application"))%>
+                                        </strong>
                                         <%=AuthenticationEndpointUtil.i18n(resourceBundle, "request.access.profile")%>
                                     </p>
                                 </div>
                             </div>
-                            
+
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                
-                                    <%
-                                        if (displayScopes && StringUtils.isNotBlank(scopeString)) {
-                                            // Remove "openid" from the scope list to display.
-                                            List<String> openIdScopes = Stream.of(scopeString.split(" "))
-                                                    .filter(x -> !StringUtils.equalsIgnoreCase(x, "openid"))
-                                                    .collect(Collectors.toList());
-            
-                                            if (CollectionUtils.isNotEmpty(openIdScopes)) {
-                                    %>
+
+                                <%
+                                    if (displayScopes && StringUtils.isNotBlank(scopeString)) {
+                                        // Remove "openid" from the scope list to display.
+                                        List<String> openIdScopes = Stream.of(scopeString.split(" "))
+                                                .filter(x -> !StringUtils.equalsIgnoreCase(x, "openid"))
+                                                .collect(Collectors.toList());
+
+                                        hasAccountsScope = openIdScopes.contains(ACCOUNTS_SCOPE);
+                                        openIdScopes.remove(ACCOUNTS_SCOPE);
+
+                                        if (CollectionUtils.isNotEmpty(openIdScopes)) {
+                                %>
                                 <h5 class="section-heading-5"><%=AuthenticationEndpointUtil.i18n(resourceBundle, "requested.scopes")%>
                                 </h5>
                                 <div class="border-gray" style="border-bottom: none;">
-        
                                     <ul class="scopes-list padding">
                                         <%
                                             for (String scopeID : openIdScopes) {
                                         %>
                                         <li><%=Encode.forHtml(scopeID)%>
                                         </li>
-                                        <%
-                                            }
+                                        <% }
                                         %>
                                     </ul>
                                 </div>
                                 <%
-                                            }
                                         }
+                                    }
                                 %>
                                 <div class="border-gray margin-bottom-double">
-                                <div class="padding">
-                                    <div class="radio">
-                                        <label>
-                                            <input type="radio" name="scope-approval" id="approveCb" value="approve">
-                                            Approve Once
-                                        </label>
+                                    <div class="padding">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" name="scope-approval" id="approveCb"
+                                                       value="approve">
+                                                Approve Once
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" name="scope-approval" id="approveAlwaysCb"
+                                                       value="approveAlways">
+                                                Approve Always
+                                            </label>
+                                        </div>
                                     </div>
-                                    <div class="radio">
-                                        <label>
-                                            <input type="radio" name="scope-approval" id="approveAlwaysCb" value="approveAlways">
-                                            Approve Always
-                                        </label>
-                                    </div>
-                                </div>
                                 </div>
                             </div>
-                            <%
-                            %>
+
+                            <% if (hasAccountsScope) { %>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <p class="margin-bottom-double"><%=AuthenticationEndpointUtil.i18n(dpcResourceBundle, "choose.accounts")%>
+                                </p>
+                                <div class="border-gray margin-bottom-double">
+                                    <div class="padding">
+                                        <% List<String> accounts = GetAccountsList.getAccountsList(request.getServerName(), "username");
+                                            for (int ii = 0; ii < accounts.size(); ii++) {
+                                                String account = accounts.get(ii);%>
+                                        <div class="checkbox claim-cb">
+                                            <label>
+                                                <input class="accounts" type="checkbox"
+                                                       name="account_<%=ii%>"
+                                                       value="<%=account%>"
+                                                       id="account_<%=ii%>"/>
+                                                <%=Encode.forHtml(account)%>
+                                            </label>
+                                        </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <table width="100%" class="styledLeft margin-top-double">
                                     <tbody>
@@ -176,7 +245,8 @@
                                                    value="<%=Encode.forHtmlAttribute(request.getParameter(Constants.SESSION_DATA_KEY_CONSENT))%>"/>
                                             <input type="hidden" name="consent" id="consent" value="deny"/>
                                             <div style="text-align:left;">
-                                                <input type="button" class="btn  btn-primary" id="approve" name="approve"
+                                                <input type="button" class="btn  btn-primary" id="approve"
+                                                       name="approve"
                                                        onclick="approved(); return false;"
                                                        value="<%=AuthenticationEndpointUtil.i18n(resourceBundle,"continue")%>"/>
                                                 <input class="btn" type="reset"
@@ -193,11 +263,11 @@
                     </div>
                 </div>
             </div>
-        
-        
+
+
         </div>
         <!-- /content -->
-    
+
     </div>
 </div>
 
@@ -205,14 +275,18 @@
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><%=AuthenticationEndpointUtil.i18n(resourceBundle, "requested.scopes")%></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title"><%=AuthenticationEndpointUtil.i18n(resourceBundle, "requested.scopes")%>
+                </h4>
             </div>
             <div class="modal-body">
                 <%=AuthenticationEndpointUtil.i18n(resourceBundle, "please.select.approve.always")%>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal"><%=AuthenticationEndpointUtil.i18n(resourceBundle, "ok")%></button>
+                <button type="button" class="btn btn-primary"
+                        data-dismiss="modal"><%=AuthenticationEndpointUtil.i18n(resourceBundle, "ok")%>
+                </button>
             </div>
         </div>
     </div>

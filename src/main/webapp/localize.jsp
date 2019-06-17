@@ -7,4 +7,8 @@
     String BUNDLE = "org.wso2.carbon.identity.application.authentication.endpoint.i18n.Resources";
     ResourceBundle resourceBundle = ResourceBundle.getBundle(BUNDLE, request.getLocale(), new
             EncodedControl(StandardCharsets.UTF_8.toString()));
+
+    String DPC_BUNDLE = "hu.dpc.openbanking.wso2.carbon.identity.application.authentication.endpoint.i18n.Resources";
+    ResourceBundle dpcResourceBundle = ResourceBundle.getBundle(DPC_BUNDLE, request.getLocale(), new
+            EncodedControl(StandardCharsets.UTF_8.toString()));
 %>
