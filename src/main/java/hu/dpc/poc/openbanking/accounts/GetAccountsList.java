@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GetAccountsList {
-    public static List<String> getAccountsList(String serverName, String username) {
+    public static List<String> getAccountsList(String logicURL, String serverName, String username) {
         ArrayList<String> accounts = new ArrayList<>();
         try {
-            URL url = new URL("http://dockerhost:4000/accounts");
+            URL url = new URL(logicURL + "/accounts");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -47,14 +47,15 @@ public class GetAccountsList {
 
     /**
      * account-access-consents
+     *
      * @param serverName
      * @param username
      * @return
      */
-    public static AccountAccessConsentsResult getAccountAccessConsents(String serverName, String username) {
+    public static AccountAccessConsentsResult getAccountAccessConsents(String logicURL, String serverName, String username) {
         ArrayList<String> accounts = new ArrayList<>();
         try {
-            URL url = new URL("http://dockerhost:4000/account-acccess-consents");
+            URL url = new URL(logicURL + "/account-acccess-consents");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -78,12 +79,5 @@ public class GetAccountsList {
         }
 
         return null;
-    }
-
-    public static void main(String[] args) {
-        List<String> result = getAccountsList("localhost", "bankuser1");
-        for (String a : result) {
-            System.out.println(a);
-        }
     }
 }

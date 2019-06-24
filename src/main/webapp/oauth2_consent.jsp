@@ -37,6 +37,7 @@
     String app = request.getParameter("application");
     String scopeString = request.getParameter("scope");
     boolean displayScopes = Boolean.parseBoolean(getServletContext().getInitParameter("displayScopes"));
+    String openBankingLogicURL = getServletContext().getInitParameter("openbanking.logic.url");
 
     String[] requestedClaimList = new String[0];
     String[] mandatoryClaimList = new String[0];
@@ -339,7 +340,7 @@
                                 </p>
                                 <div class="border-gray margin-bottom-double">
                                     <div class="padding">
-                                        <% List<String> accounts = GetAccountsList.getAccountsList(request.getServerName(), "username");
+                                        <% List<String> accounts = GetAccountsList.getAccountsList(openBankingLogicURL, request.getServerName(), "username");
                                             for (int ii = 0; ii < accounts.size(); ii++) {
                                                 String account = accounts.get(ii);%>
 

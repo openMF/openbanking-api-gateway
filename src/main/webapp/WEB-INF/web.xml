@@ -88,6 +88,11 @@
         <param-value>true</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>openbanking.logic.url</param-name>
+        <param-value>http://dockerhost:4000</param-value>
+    </context-param>
+
     <filter>
         <filter-name>HttpHeaderSecurityFilter</filter-name>
         <filter-class>org.apache.catalina.filters.HttpHeaderSecurityFilter</filter-class>
@@ -145,6 +150,18 @@
             org.wso2.carbon.identity.application.authentication.endpoint.util.listener.AuthenticationEndpointContextListener
         </listener-class>
     </listener>
+
+    <servlet>
+        <servlet-name>reportAuthorizeResult</servlet-name>
+        <servlet-class>hu.dpc.poc.openbanking.accounts.ReportAuthorizeResult</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>reportAuthorizeResult</servlet-name>
+        <url-pattern>/reportAuthorizeResult</url-pattern>
+    </servlet-mapping>
+
 
     <servlet>
         <servlet-name>retry.do</servlet-name>
