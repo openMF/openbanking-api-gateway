@@ -18,15 +18,19 @@
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page import="hu.dpc.poc.openbanking.accounts.GetAccountsList" %>
+<%@ page import="hu.dpc.poc.openbanking.FineractGateway" %>
+<%@ page import="hu.dpc.poc.openbanking.entities.account_access_consents.ConsentResult" %>
+<%@ page import="hu.dpc.poc.openbanking.entities.accounts_held.Account" %>
+<%@ page import="hu.dpc.poc.openbanking.entities.accounts_held.AccountHeldResponse" %>
+<%@ page import="hu.dpc.poc.openbanking.entities.party.PartyResponse" %>
 <%@ page import="org.apache.commons.collections.CollectionUtils" %>
 <%@ page import="org.apache.commons.lang.ArrayUtils" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.identity.application.authentication.endpoint.util.Constants" %>
+<%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page import="java.util.stream.Stream" %>
-<%@ page import="static hu.dpc.poc.openbanking.accounts.GetAccountsList.getAccountsList" %>
 <%@ include file="localize.jsp" %>
 <%@ include file="init-url.jsp" %>
 
@@ -36,8 +40,9 @@
 
     String app = request.getParameter("application");
     String scopeString = request.getParameter("scope");
-    boolean displayScopes = Boolean.parseBoolean(getServletContext().getInitParameter("displayScopes"));
-    String openBankingLogicURL = getServletContext().getInitParameter("openbanking.logic.url");
+    boolean displayScopes = Boolean.parseBoolean(this.getServletConfig().getServletContext().getInitParameter("displayScopes"));
+    String openBankingLogicURL = this.getServletConfig().getServletContext().getInitParameter("openbanking.logic.url");
+    System.out.println("openBankingLogicURL: " + openBankingLogicURL);
 
     String[] requestedClaimList = new String[0];
     String[] mandatoryClaimList = new String[0];
@@ -55,6 +60,9 @@
         hiding the scopes being displayed and the approve always button.
     */
     boolean userClaimsConsentOnly = Boolean.parseBoolean(request.getParameter(Constants.USER_CLAIMS_CONSENT_ONLY));
+
+    PartyResponse partyResponse = FineractGateway.getParty(request, openBankingLogicURL);
+    ConsentResult consentResult = FineractGateway.getConsent(request, openBankingLogicURL);
 %>
 
 <html>
@@ -93,8 +101,10 @@
 
 
         $.ajax({
-            url: "reportAuthorizeResult", type: "POST",
+            url: "reportAuthorizeResult",
+            type: "POST",
             data: respond,
+            dataType: "json",
             success: function (result) {
                 console.log(result)
             },
@@ -168,7 +178,7 @@
         <div class="pull-left brand float-remove-xs text-center-xs">
             <a href="#">oauth2_consent
                 <img src="images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
-                <h1><em><%=AuthenticationEndpointUtil.i18n(resourceBundle, "identity.server")%>
+                <h1><em><%=AuthenticationEndpointUtil.i18n(resourceBundle, "identity.server")%> for OpenBank
                 </em></h1>
             </a>
         </div>
@@ -340,7 +350,15 @@
                                 </p>
                                 <div class="border-gray margin-bottom-double">
                                     <div class="padding">
-                                        <% List<String> accounts = GetAccountsList.getAccountsList(openBankingLogicURL, request.getServerName(), "username");
+                                        <%
+                                            AccountHeldResponse accountHeldResponse = FineractGateway.getAccountsHeld(request, openBankingLogicURL);
+                                            List<String> accounts = new ArrayList<>();
+                                            if (null != accountHeldResponse) {
+                                                for (Account account : accountHeldResponse.getAccount()) {
+                                                    accounts.add(account.getAccountId());
+                                                }
+                                            }
+
                                             for (int ii = 0; ii < accounts.size(); ii++) {
                                                 String account = accounts.get(ii);%>
 

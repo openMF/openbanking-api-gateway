@@ -53,9 +53,9 @@
        <param-value>https://localhost:9443/accountrecoveryendpoint</param-value>
    </context-param-->
     <context-param>
-       <param-name>AccountRecoveryRESTEndpointURL</param-name>
-       <param-value>/t/tenant-domain/api/identity/user/v1.0/</param-value>
-   </context-param>
+        <param-name>AccountRecoveryRESTEndpointURL</param-name>
+        <param-value>/t/tenant-domain/api/identity/user/v1.0/</param-value>
+    </context-param>
     <!--context-param>
         <param-name>EnableRecoveryEndpoint</param-name>
         <param-value>true</param-value>
@@ -90,7 +90,7 @@
 
     <context-param>
         <param-name>openbanking.logic.url</param-name>
-        <param-value>http://dockerhost:4000</param-value>
+        <param-value>http://lion.mlabs.dpc.hu/accessschema/ob</param-value>
     </context-param>
 
     <filter>
@@ -120,23 +120,23 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>ContentTypeBasedCachePreventionFilter</filter-name>    
+        <filter-name>ContentTypeBasedCachePreventionFilter</filter-name>
         <filter-class>
-           org.wso2.carbon.ui.filters.cache.ContentTypeBasedCachePreventionFilter
+            org.wso2.carbon.ui.filters.cache.ContentTypeBasedCachePreventionFilter
         </filter-class>
         <init-param>
-           <param-name>patterns</param-name>
-           <param-value>"text/html" ,"application/json" ,"plain/text"</param-value>
+            <param-name>patterns</param-name>
+            <param-value>"text/html" ,"application/json" ,"plain/text"</param-value>
         </init-param>
         <init-param>
-           <param-name>filterAction</param-name>
-           <param-value>enforce</param-value>
+            <param-name>filterAction</param-name>
+            <param-value>enforce</param-value>
         </init-param>
         <init-param>
-           <param-name>httpHeaders</param-name>
-           <param-value>
-               Cache-Control: no-store, no-cache, must-revalidate, private
-           </param-value>
+            <param-name>httpHeaders</param-name>
+            <param-value>
+                Cache-Control: no-store, no-cache, must-revalidate, private
+            </param-value>
         </init-param>
     </filter>
 
@@ -153,7 +153,7 @@
 
     <servlet>
         <servlet-name>reportAuthorizeResult</servlet-name>
-        <servlet-class>hu.dpc.poc.openbanking.accounts.ReportAuthorizeResult</servlet-class>
+        <servlet-class>hu.dpc.poc.openbanking.ReportAuthorizeResult</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 

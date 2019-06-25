@@ -1,10 +1,15 @@
-package hu.dpc.poc.openbanking.accounts.hu.dpc.poc.openbanking.entities.hu.dpc.poc.openbanking.accounts.account_access_consents;
+package hu.dpc.poc.openbanking.entities.account_access_consents;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import hu.dpc.poc.openbanking.entities.accounts_held.Account;
 
 import java.util.List;
 
-public class Data {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Consent {
     /*
 "ConsentId": "urn-alphabank-intent-88379",
         "Status": "AwaitingAuthorisation",
@@ -47,6 +52,12 @@ public class Data {
     private String transactionFromDateTime;
     @JsonProperty("TransactionToDateTime")
     private String transactionToDateTime;
+    @JsonProperty("ConsentId")
+    private String consentId;
+    @JsonProperty("Action")
+    private String action;
+    @JsonProperty("Account")
+    private List<Account> accounts;
 
     public String getStatusUpdateDateTime() {
         return statusUpdateDateTime;
@@ -102,5 +113,29 @@ public class Data {
 
     public void setTransactionToDateTime(String transactionToDateTime) {
         this.transactionToDateTime = transactionToDateTime;
+    }
+
+    public String getConsentId() {
+        return consentId;
+    }
+
+    public void setConsentId(String consentId) {
+        this.consentId = consentId;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 }
