@@ -7,9 +7,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HttpServletUtils {
-    public static Map<String, String> splitQuery(URL url) throws UnsupportedEncodingException {
+    public static Map<String, String> splitQuery(final URL url) throws UnsupportedEncodingException {
+        String urlQuery = url.getQuery();
+        if (null == urlQuery) {
+            return null;
+        }
+        final String[] pairs = urlQuery.split("&");
         final Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-        final String[] pairs = url.getQuery().split("&");
         for (String pair : pairs) {
             final int idx = pair.indexOf("=");
             final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), "UTF-8") : pair;

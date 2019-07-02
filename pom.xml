@@ -217,6 +217,26 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.2</version>
             </plugin>
+            <!-- plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-jspc-maven-plugin</artifactId>
+                <version>9.4.19.v20190610</version>
+                <executions>
+                    <execution>
+                        <id>jspc</id>
+                        <goals>
+                            <goal>jspc</goal>
+                        </goals>
+                        <configuration>
+                            <jspc>
+                                <failOnError>true</failOnError>
+                            </jspc>
+                            <includes>oauth2_authz.jsp, oauth2_consent.jsp</includes>
+                            <classesDirectory>${project.build.outputDirectory}/classes</classesDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin -->
         </plugins>
     </build>
 

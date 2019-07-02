@@ -90,8 +90,18 @@
 
     <context-param>
         <param-name>openbanking.logic.url</param-name>
-        <param-value>http://lion.mlabs.dpc.hu/accessschema/ob</param-value>
+        <!-- param-value>https://a3c81e50-952b-4a4c-ae82-d6a98735e7ac.mock.pstmn.io</param-value -->
+        <!-- param-value>http://lion.mlabs.dpc.hu/accessschema/ob</param-value -->
+        <param-value>http://elephant.mlabs.dpc.hu/accessschema/ob</param-value>
     </context-param>
+    <!-- context-param>
+        <param-name>openbanking.logic.mock.param-name</param-name>
+        <param-value>x-mock-epic</param-value>
+    </context-param>
+    <context-param>
+        <param-name>openbanking.logic.mock.param-value</param-name>
+        <param-value>default</param-value>
+    </context-param -->
 
     <filter>
         <filter-name>HttpHeaderSecurityFilter</filter-name>

@@ -39,11 +39,9 @@
     String app = request.getParameter("application");
     String scopeString = request.getParameter("scope");
     boolean displayScopes = Boolean.parseBoolean(this.getServletConfig().getServletContext().getInitParameter("displayScopes"));
-    String openBankingLogicURL = this.getServletConfig().getServletContext().getInitParameter("openbanking.logic.url");
-    System.out.println("openBankingLogicURL: " + openBankingLogicURL);
 
-    PartyResponse partyResponse = FineractGateway.getParty(request, openBankingLogicURL);
-    ConsentResult consentResult = FineractGateway.getConsent(request, openBankingLogicURL);
+    PartyResponse partyResponse = FineractGateway.getParty(this.getServletConfig(), request);
+    ConsentResult consentResult = FineractGateway.getConsent(this.getServletConfig(), request);
 %>
 
 <html>
@@ -213,13 +211,14 @@
                                                 Approve Once
                                             </label>
                                         </div>
-                                        <div class="radio">
+                                        <!-- ST:2019-07-02:Temporary commented out -->
+                                        <!-- div class="radio">
                                             <label>
                                                 <input type="radio" name="scope-approval" id="approveAlwaysCb"
                                                        value="approveAlways">
                                                 Approve Always
                                             </label>
-                                        </div>
+                                        </div -->
                                     </div>
                                 </div>
                             </div>
@@ -231,10 +230,10 @@
                                 <div class="border-gray margin-bottom-double">
                                     <div class="padding">
                                         <%
-                                            AccountHeldResponse accountHeldResponse = FineractGateway.getAccountsHeld(request, openBankingLogicURL);
+                                            AccountHeldResponse accountHeldResponse = FineractGateway.getAccountsHeld(this.getServletConfig(), request);
                                             List<String> accounts = new ArrayList<>();
                                             if (null != accountHeldResponse) {
-                                                for (Account account : accountHeldResponse.getAccount()) {
+                                                for (Account account : accountHeldResponse.getAccounts().getAccount()) {
                                                     accounts.add(account.getAccountId());
                                                 }
                                             }

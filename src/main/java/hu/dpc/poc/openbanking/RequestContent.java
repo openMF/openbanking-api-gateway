@@ -52,16 +52,17 @@ public class RequestContent {
         LOG.info(s);
         if (null != spQueryParams) {
             Map<String, String> queryParams = HttpServletUtils.splitQuery(new URL("http://x/x?" + spQueryParams));
+            if (null != queryParams) {
+                tppClientId = queryParams.get("client_id");
+                s = "tppClientId: [{" + tppClientId + "}]";
+                System.out.println(s);
+                LOG.info(s);
 
-            tppClientId = queryParams.get("client_id");
-            s = "tppClientId: [{" + tppClientId + "}]";
-            System.out.println(s);
-            LOG.info(s);
-
-            consentId = queryParams.get("consentId");
-            s = "consentId: [{" + consentId + "}]";
-            System.out.println(s);
-            LOG.info(s);
+                consentId = queryParams.get("consentId");
+                s = "consentId: [{" + consentId + "}]";
+                System.out.println(s);
+                LOG.info(s);
+            }
         }
 
 
@@ -69,46 +70,49 @@ public class RequestContent {
         if (null != referer) {
             Map<String, String> refererParams = HttpServletUtils.splitQuery(new URL(referer));
 
-            if (null == loggedInUser || loggedInUser.isEmpty()) {
-                loggedInUser = refererParams.get("loggedInUser");
-                s = "loggedInUser from referer: [{" + loggedInUser + "}]";
-                System.out.println(s);
-                LOG.info(s);
-            }
-
-            if (null == tppClientId || tppClientId.isEmpty()) {
-                tppClientId = refererParams.get("client_id");
-                s = "tppClientId from referer: [{" + tppClientId + "}]";
-                System.out.println(s);
-                LOG.info(s);
-            }
-
-            if (null == consentId || consentId.isEmpty()) {
-                consentId = refererParams.get("consentId");
-                s = "consentId from referer: [{" + consentId + "}]";
-                System.out.println(s);
-                LOG.info(s);
-            }
-
-            String spQueryParams2 = refererParams.get("spQueryParams");
-            s = "spQueryParams from referer: [{" + spQueryParams2 + "}]";
-            System.out.println(s);
-            LOG.info(s);
-            if (null != spQueryParams2) {
-                Map<String, String> queryParams2 = HttpServletUtils.splitQuery(new URL("http://x/x?" + spQueryParams2));
+            if (null != refererParams) {
+                if (null == loggedInUser || loggedInUser.isEmpty()) {
+                    loggedInUser = refererParams.get("loggedInUser");
+                    s = "loggedInUser from referer: [{" + loggedInUser + "}]";
+                    System.out.println(s);
+                    LOG.info(s);
+                }
 
                 if (null == tppClientId || tppClientId.isEmpty()) {
-                    tppClientId = queryParams2.get("client_id");
-                    s = "tppClientId from referer spQ: [{" + tppClientId + "}]";
+                    tppClientId = refererParams.get("client_id");
+                    s = "tppClientId from referer: [{" + tppClientId + "}]";
                     System.out.println(s);
                     LOG.info(s);
                 }
 
                 if (null == consentId || consentId.isEmpty()) {
-                    consentId = queryParams2.get("consentId");
-                    s = "consentId referer spQ: [{" + consentId + "}]";
+                    consentId = refererParams.get("consentId");
+                    s = "consentId from referer: [{" + consentId + "}]";
                     System.out.println(s);
                     LOG.info(s);
+                }
+
+                String spQueryParams2 = refererParams.get("spQueryParams");
+                s = "spQueryParams from referer: [{" + spQueryParams2 + "}]";
+                System.out.println(s);
+                LOG.info(s);
+                if (null != spQueryParams2) {
+                    Map<String, String> queryParams2 = HttpServletUtils.splitQuery(new URL("http://x/x?" + spQueryParams2));
+                    if (null != queryParams2) {
+                        if (null == tppClientId || tppClientId.isEmpty()) {
+                            tppClientId = queryParams2.get("client_id");
+                            s = "tppClientId from referer spQ: [{" + tppClientId + "}]";
+                            System.out.println(s);
+                            LOG.info(s);
+                        }
+
+                        if (null == consentId || consentId.isEmpty()) {
+                            consentId = queryParams2.get("consentId");
+                            s = "consentId referer spQ: [{" + consentId + "}]";
+                            System.out.println(s);
+                            LOG.info(s);
+                        }
+                    }
                 }
             }
         }
