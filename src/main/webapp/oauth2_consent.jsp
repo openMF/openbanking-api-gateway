@@ -15,18 +15,17 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page import="hu.dpc.poc.openbanking.FineractGateway" %>
-<%@ page import="hu.dpc.poc.openbanking.entities.account_access_consents.ConsentResult" %>
-<%@ page import="hu.dpc.poc.openbanking.entities.accounts_held.Account" %>
-<%@ page import="hu.dpc.poc.openbanking.entities.accounts_held.AccountHeldResponse" %>
-<%@ page import="hu.dpc.poc.openbanking.entities.party.PartyResponse" %>
+<%@ page import="hu.dpc.openbanking.apigateway.FineractGateway" %>
+<%@ page import="hu.dpc.openbanking.apigateway.entities.account_access_consents.ConsentResult" %>
+<%@ page import="hu.dpc.openbanking.apigateway.entities.accounts_held.AccountHeldResponse" %>
+<%@ page import="hu.dpc.openbanking.apigateway.entities.party.PartyResponse" %>
 <%@ page import="org.apache.commons.collections.CollectionUtils" %>
 <%@ page import="org.apache.commons.lang.ArrayUtils" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.identity.application.authentication.endpoint.util.Constants" %>
+<%@ page import="uk.org.openbanking.v3_1_2.commons.Account" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.stream.Collectors" %>
@@ -35,12 +34,12 @@
 <%@ include file="init-url.jsp" %>
 
 <%
-    String ACCOUNTS_SCOPE = "accounts";
+    final String ACCOUNTS_SCOPE = "accounts";
     boolean hasAccountsScope = false;
 
-    String app = request.getParameter("application");
-    String scopeString = request.getParameter("scope");
-    boolean displayScopes = Boolean.parseBoolean(this.getServletConfig().getServletContext().getInitParameter("displayScopes"));
+    final String app = request.getParameter("application");
+    final String scopeString = request.getParameter("scope");
+    final boolean displayScopes = Boolean.parseBoolean(this.getServletConfig().getServletContext().getInitParameter("displayScopes"));
 
     String[] requestedClaimList = new String[0];
     String[] mandatoryClaimList = new String[0];
@@ -57,10 +56,11 @@
         Service Provider. If this param is 'true' and user has already given consents for the OIDC scopes, we will be
         hiding the scopes being displayed and the approve always button.
     */
-    boolean userClaimsConsentOnly = Boolean.parseBoolean(request.getParameter(Constants.USER_CLAIMS_CONSENT_ONLY));
+    final boolean userClaimsConsentOnly = Boolean.parseBoolean(request.getParameter(Constants.USER_CLAIMS_CONSENT_ONLY));
 
-    PartyResponse partyResponse = FineractGateway.getParty(this.getServletConfig(), request);
-    ConsentResult consentResult = FineractGateway.getConsent(this.getServletConfig(), request);
+    final PartyResponse partyResponse = FineractGateway.getParty(this.getServletConfig(), request);
+    final ConsentResult consentResult = FineractGateway.getConsent(this.getServletConfig(), request);
+    final AccountHeldResponse accountHeldResponse = FineractGateway.getAccountsHeld(this.getServletConfig(), request);
 %>
 
 <html>
@@ -97,7 +97,6 @@
             respond.accounts.push(checkedAccounts[i].value);
         }
 
-
         $.ajax({
             url: "reportAuthorizeResult",
             type: "POST",
@@ -122,46 +121,50 @@
     function approved() {
         var mandatoryClaimCBs = $(".mandatory-claim");
         var checkedMandatoryClaimCBs = $(".mandatory-claim:checked");
-        var scopeApproval = $("input[name='scope-approval']");
+        /*
+                var scopeApproval = $("input[name='scope-approval']");
 
-        // If scope approval radio button is rendered then we need to validate that it's checked
-        if (scopeApproval.length > 0) {
-            if (scopeApproval.is(":checked")) {
-                var checkScopeConsent = $("input[name='scope-approval']:checked");
-                $('#consent').val(checkScopeConsent.val());
+                // If scope approval radio button is rendered then we need to validate that it's checked
+                if (scopeApproval.length > 0) {
+                    if (scopeApproval.is(":checked")) {
+                        var checkScopeConsent = $("input[name='scope-approval']:checked");
+                        $('#consent').val(checkScopeConsent.val());
+                    } else {
+                        $("#modal_scope_validation").modal();
+                        return;
+                    }
+                } else {
+                    // Scope radio button was not rendered therefore set the consent to 'approve'
+                    document.getElementById('consent').value = "approve";
+                }
+        */
+        $('#consent').val('approve');
+
+        if (checkedMandatoryClaimCBs.length === mandatoryClaimCBs.length) {
+            // Last action point, to catch event
+            reportUserApprove();
+            document.getElementById("profile").submit();
+        } else {
+            $("#modal_claim_validation").modal();
+        }
+    }
+
+    /*
+        function approvedAlways() {
+            var mandatoryClaimCBs = $(".mandatory-claim");
+            var checkedMandatoryClaimCBs = $(".mandatory-claim:checked");
+
+            if (checkedMandatoryClaimCBs.length === mandatoryClaimCBs.length) {
+                document.getElementById('consent').value = "approveAlways";
+
+                // Last action point, to catch event
+                reportUserApprove();
+                document.getElementById("profile").submit();
             } else {
-                $("#modal_scope_validation").modal();
-                return;
+                $("#modal_claim_validation").modal();
             }
-        } else {
-            // Scope radio button was not rendered therefore set the consent to 'approve'
-            document.getElementById('consent').value = "approve";
         }
-
-        if (checkedMandatoryClaimCBs.length === mandatoryClaimCBs.length) {
-            // Last action point, to catch event
-            reportUserApprove();
-            document.getElementById("profile").submit();
-        } else {
-            $("#modal_claim_validation").modal();
-        }
-    }
-
-    function approvedAlways() {
-        var mandatoryClaimCBs = $(".mandatory-claim");
-        var checkedMandatoryClaimCBs = $(".mandatory-claim:checked");
-
-        if (checkedMandatoryClaimCBs.length === mandatoryClaimCBs.length) {
-            document.getElementById('consent').value = "approveAlways";
-
-            // Last action point, to catch event
-            reportUserApprove();
-            document.getElementById("profile").submit();
-        } else {
-            $("#modal_claim_validation").modal();
-        }
-    }
-
+    */
     function deny() {
         reportUserDeny();
         document.getElementById('consent').value = "deny";
@@ -206,9 +209,10 @@
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <div class="alert alert-warning" role="alert">
                                     <p class="margin-bottom-double">
-                                        <strong><%=Encode.forHtml(request.getParameter("application"))%>
-                                        </strong>
-                                        <%=AuthenticationEndpointUtil.i18n(resourceBundle, "request.access.profile")%>
+                                        Welcome <strong><%=partyResponse.getParties().getParty().getFullLegalName()%>
+                                    </strong>,<br/>
+                                        <strong><%=Encode.forHtml(app)%>
+                                        </strong> <%=AuthenticationEndpointUtil.i18n(resourceBundle, "request.access.profile")%>
                                     </p>
                                 </div>
                             </div>
@@ -221,21 +225,19 @@
                                 <%
                                     if (displayScopes && StringUtils.isNotBlank(scopeString)) {
                                         // Remove "openid" from the scope list to display.
-                                        List<String> openIdScopes = Stream.of(scopeString.split(" "))
+                                        final List<String> openIdScopes = Stream.of(scopeString.split(" "))
                                                 .filter(x -> !StringUtils.equalsIgnoreCase(x, "openid"))
                                                 .collect(Collectors.toList());
 
                                         hasAccountsScope = openIdScopes.contains(ACCOUNTS_SCOPE);
-                                        openIdScopes.remove(ACCOUNTS_SCOPE);
-
                                         if (CollectionUtils.isNotEmpty(openIdScopes)) {
                                 %>
                                 <h5 class="section-heading-5"><%=AuthenticationEndpointUtil.i18n(resourceBundle, "requested.scopes")%>
                                 </h5>
-                                <div class="border-gray" style="border-bottom: none;">
+                                <div class="border-gray">
                                     <ul class="scopes-list padding">
                                         <%
-                                            for (String scopeID : openIdScopes) {
+                                            for (final String scopeID : openIdScopes) {
                                         %>
                                         <li><%=Encode.forHtml(scopeID)%>
                                         </li>
@@ -246,7 +248,8 @@
                                         }
                                     } %>
 
-                                <div class="border-gray margin-bottom-double">
+                                <!-- ST:2019-07-02:Temporary commented out -->
+                                <!-- div class="border-gray margin-bottom-double">
                                     <div class="padding">
                                         <div class="radio">
                                             <label>
@@ -255,21 +258,16 @@
                                                 Approve Once
                                             </label>
                                         </div>
-                                        <!-- ST:2019-07-02:Temporary commented out -->
-                                        <!-- div class="radio">
+                                        <div class="radio">
                                             <label>
                                                 <input type="radio" name="scope-approval" id="approveAlwaysCb"
                                                        value="approveAlways">
                                                 Approve Always
                                             </label>
-                                        </div -->
+                                        </div>
                                     </div>
-                                </div>
-
-
-                                <%
-                                    }
-                                %>
+                                </div -->
+                                <% } %>
                             </div>
                             <!-- Prompting for consent is only needed if we have mandatory or requested claims without any consent -->
                             <% if (ArrayUtils.isNotEmpty(mandatoryClaimList) || ArrayUtils.isNotEmpty(requestedClaimList)) { %>
@@ -295,11 +293,11 @@
                                             </div>
                                         </div>
                                         <div class="claim-list">
-                                            <% for (String claim : mandatoryClaimList) {
-                                                String[] mandatoryClaimData = claim.split("_", 2);
+                                            <% for (final String claim : mandatoryClaimList) {
+                                                final String[] mandatoryClaimData = claim.split("_", 2);
                                                 if (mandatoryClaimData.length == 2) {
-                                                    String claimId = mandatoryClaimData[0];
-                                                    String displayName = mandatoryClaimData[1];
+                                                    final String claimId = mandatoryClaimData[0];
+                                                    final String displayName = mandatoryClaimData[1];
                                             %>
                                             <div class="checkbox claim-cb">
                                                 <label>
@@ -315,11 +313,11 @@
                                                     }
                                                 }
                                             %>
-                                            <% for (String claim : requestedClaimList) {
-                                                String[] requestedClaimData = claim.split("_", 2);
+                                            <% for (final String claim : requestedClaimList) {
+                                                final String[] requestedClaimData = claim.split("_", 2);
                                                 if (requestedClaimData.length == 2) {
-                                                    String claimId = requestedClaimData[0];
-                                                    String displayName = requestedClaimData[1];
+                                                    final String claimId = requestedClaimData[0];
+                                                    final String displayName = requestedClaimData[1];
                                             %>
                                             <div class="checkbox claim-cb">
                                                 <label>
@@ -344,23 +342,46 @@
                             <% } %>
 
                             <% if (hasAccountsScope) { %>
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                <p class="margin-bottom-double"><%=AuthenticationEndpointUtil.i18n(dpcResourceBundle, "choose.accounts")%>
-                                </p>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-top-double">
+                                <p>Based on <strong>Accounts</strong> scope requirements</p>
+                                <!-- Accounts permissions -->
+                                <%{%>
+                                <h5 class="section-heading-5"><%=AuthenticationEndpointUtil.i18n(dpcResourceBundle, "accounts.permissions")%>
+                                </h5>
+                                <div class="border-gray margin-bottom-double">
+                                    <div class="padding">
+                                        <strong>Consent Id:</strong> <%=consentResult.getData().getConsentId()%><br/>
+                                        <strong>Transaction from time:</strong> <%=consentResult.getData().getTransactionFromDateTime()%>
+                                        <br/>
+                                        <strong>Transaction to time:</strong> <%=consentResult.getData().getTransactionToDateTime()%>
+                                        <br/>
+                                        <strong>Permissions:</strong><br/>
+                                        <ul class="scopes-list padding">
+                                            <% final List<String> consentPermissions = consentResult.getData().getPermissions();
+                                                for (int ii = 0; ii < consentPermissions.size(); ii++) {
+                                                    final String permission = consentPermissions.get(ii);%>
+                                            <li><%=Encode.forHtml(permission)%>
+                                            </li>
+                                            <%}%>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <%}%>
+                                <%{%>
+                                <h5 class="section-heading-5"><%=AuthenticationEndpointUtil.i18n(dpcResourceBundle, "choose.accounts")%>
+                                </h5>
                                 <div class="border-gray margin-bottom-double">
                                     <div class="padding">
                                         <%
-                                            AccountHeldResponse accountHeldResponse = FineractGateway.getAccountsHeld(this.getServletConfig(), request);
-                                            List<String> accounts = new ArrayList<>();
+                                            final List<String> accounts = new ArrayList<>();
                                             if (null != accountHeldResponse) {
-                                                for (Account account : accountHeldResponse.getAccounts().getAccount()) {
+                                                for (final Account account : accountHeldResponse.getAccounts().getAccount()) {
                                                     accounts.add(account.getAccountId());
                                                 }
                                             }
 
                                             for (int ii = 0; ii < accounts.size(); ii++) {
-                                                String account = accounts.get(ii);%>
-
+                                                final String account = accounts.get(ii);%>
                                         <div class="checkbox claim-cb">
                                             <label>
                                                 <input class="accounts" type="checkbox"
@@ -373,6 +394,7 @@
                                         <% } %>
                                     </div>
                                 </div>
+                                <%}%>
                             </div>
                             <% } %>
 
@@ -415,11 +437,8 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
         <!-- /content -->
-
     </div>
 </div>
 
@@ -468,8 +487,6 @@
     </div>
 </div>
 
-<script src="libs/jquery_1.11.3/jquery-1.11.3.js"></script>
-<script src="libs/bootstrap_3.3.5/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
         $("#consent_select_all").click(function () {
