@@ -18,13 +18,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ page import="hu.dpc.openbanking.apigateway.FineractGateway" %>
-<%@ page import="hu.dpc.openbanking.apigateway.entities.account_access_consents.ConsentResult" %>
-<%@ page import="hu.dpc.openbanking.apigateway.entities.accounts_held.AccountHeldResponse" %>
-<%@ page import="hu.dpc.openbanking.apigateway.entities.party.PartyResponse" %>
+<%@ page import="hu.dpc.openbanking.apigateway.FineractGatewayAccounts" %>
+<%@ page import="hu.dpc.openbanking.apigateway.FineractGatewayPayments" %>
+<%@ page import="hu.dpc.openbanking.apigateway.entities.accounts.AccountHeldResponse" %>
+<%@ page import="hu.dpc.openbanking.apigateway.entities.accounts.PartyResponse" %>
 <%@ page import="org.apache.commons.collections.CollectionUtils" %>
+<%@ page import="org.jetbrains.annotations.Nullable" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.identity.application.authentication.endpoint.util.Constants" %>
 <%@ page import="uk.org.openbanking.v3_1_2.commons.Account" %>
+<%@ page import="uk.org.openbanking.v3_1_2.payments.OBWriteDomesticConsentResponse3" %>
+<%@ page import="uk.org.openbanking.v3_1_2.payments.OBWriteFileConsent3DataSCASupportData" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.stream.Collectors" %>
@@ -34,15 +38,30 @@
 
 <%
     final String ACCOUNTS_SCOPE = "accounts";
-    boolean hasAccountsScope = false;
+    final String PAYMENTS_SCOPE = "payments";
 
     final String app = request.getParameter("application");
     final String scopeString = request.getParameter("scope");
     final boolean displayScopes = Boolean.parseBoolean(this.getServletConfig().getServletContext().getInitParameter("displayScopes"));
 
+    final List<String> openIdScopes = Stream.of(scopeString.split(" "))
+            .filter(x -> !StringUtils.equalsIgnoreCase(x, "openid"))
+            .collect(Collectors.toList());
+
+    final boolean hasAccountsScope = openIdScopes.contains(ACCOUNTS_SCOPE);
+    final boolean hasPaymentsScope = openIdScopes.contains(PAYMENTS_SCOPE);
+
     final PartyResponse partyResponse = FineractGateway.getParty(this.getServletConfig(), request);
-    final ConsentResult consentResult = FineractGateway.getConsent(this.getServletConfig(), request);
-    final AccountHeldResponse accountHeldResponse = FineractGateway.getAccountsHeld(this.getServletConfig(), request);
+    final hu.dpc.openbanking.apigateway.entities.accounts.ConsentResult accountsConsentResult = hasAccountsScope ? FineractGatewayAccounts.getConsent(this.getServletConfig(), request) : null;
+    final AccountHeldResponse accountHeldResponse = hasAccountsScope ? FineractGatewayAccounts.getAccountsHeld(this.getServletConfig(), request) : null;
+    final @Nullable OBWriteDomesticConsentResponse3 paymentsConsentResult = hasPaymentsScope ? FineractGatewayPayments.getConsent(this.getServletConfig(), request) : null;
+
+    final boolean paymentsSCARequired;
+    if (hasPaymentsScope && null != paymentsConsentResult && null != paymentsConsentResult.getData() && null != paymentsConsentResult.getData().getScASupportData() && OBWriteFileConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.SCA == paymentsConsentResult.getData().getScASupportData().getAppliedAuthenticationApproach()) {
+        paymentsSCARequired = true;
+    } else {
+        paymentsSCARequired = false;
+    }
 %>
 
 <html>
@@ -177,12 +196,6 @@
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <%
                                     if (displayScopes && StringUtils.isNotBlank(scopeString)) {
-                                        // Remove "openid" from the scope list to display.
-                                        final List<String> openIdScopes = Stream.of(scopeString.split(" "))
-                                                .filter(x -> !StringUtils.equalsIgnoreCase(x, "openid"))
-                                                .collect(Collectors.toList());
-
-                                        hasAccountsScope = openIdScopes.contains(ACCOUNTS_SCOPE);
                                         if (CollectionUtils.isNotEmpty(openIdScopes)) {
                                 %>
                                 <h5 class="section-heading-5"><%=AuthenticationEndpointUtil.i18n(resourceBundle, "requested.scopes")%>
@@ -223,6 +236,7 @@
                             </div>
 
                             <% if (hasAccountsScope) { %>
+                            <!-- Accounts: BEGIN-->
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-top-double">
                                 <p>Based on <strong>Accounts</strong> scope requirements</p>
                                 <!-- Accounts permissions -->
@@ -231,14 +245,14 @@
                                 </h5>
                                 <div class="border-gray margin-bottom-double">
                                     <div class="padding">
-                                        <strong>Consent Id:</strong> <%=consentResult.getData().getConsentId()%><br/>
-                                        <strong>Transaction from time:</strong> <%=consentResult.getData().getTransactionFromDateTime()%>
+                                        <strong>Consent Id:</strong> <%=accountsConsentResult.getData().getConsentId()%><br/>
+                                        <strong>Transaction from time:</strong> <%=accountsConsentResult.getData().getTransactionFromDateTime()%>
                                         <br/>
-                                        <strong>Transaction to time:</strong> <%=consentResult.getData().getTransactionToDateTime()%>
+                                        <strong>Transaction to time:</strong> <%=accountsConsentResult.getData().getTransactionToDateTime()%>
                                         <br/>
                                         <strong>Permissions:</strong><br/>
                                         <ul class="scopes-list padding">
-                                            <% final List<String> consentPermissions = consentResult.getData().getPermissions();
+                                            <% final List<String> consentPermissions = accountsConsentResult.getData().getPermissions();
                                                 for (int ii = 0; ii < consentPermissions.size(); ii++) {
                                                     final String permission = consentPermissions.get(ii);%>
                                             <li><%=Encode.forHtml(permission)%>
@@ -277,6 +291,52 @@
                                 </div>
                                 <%}%>
                             </div>
+                            <!-- Accounts: END-->
+                            <% } %>
+                            <% if (hasPaymentsScope) { %>
+                            <!-- Payments: BEGIN-->
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-top-double">
+                                <p>Based on <strong>Accounts</strong> scope requirements</p>
+                                <!-- Accounts permissions -->
+                                <%{%>
+                                <h5 class="section-heading-5"><%=AuthenticationEndpointUtil.i18n(dpcResourceBundle, "accounts.permissions")%>
+                                </h5>
+                                <div class="border-gray margin-bottom-double">
+                                    <div class="padding">
+                                        <strong>Consent Id:</strong> <%=paymentsConsentResult.getData().getConsentId()%><br/>
+                                        <strong>Status:</strong> <%=paymentsConsentResult.getData().getStatus()%><br/>
+                                        <br/>
+                                        <strong>Debtor Account:</strong><br/>
+                                        <ul class="scopes-list padding">
+                                            <li><strong>Scheme name:</strong> <%=paymentsConsentResult.getData().getInitiation().getDebtorAccount().getSchemeName()%>
+                                            </li>
+                                            <li><strong>Identification:</strong> <%=paymentsConsentResult.getData().getInitiation().getDebtorAccount().getIdentification()%>
+                                            </li>
+                                            <li><strong>Name:</strong> <%=paymentsConsentResult.getData().getInitiation().getDebtorAccount().getName()%>
+                                            </li>
+                                            <li><strong>Secondary Identification:</strong> <%=paymentsConsentResult.getData().getInitiation().getDebtorAccount().getSecondaryIdentification()%>
+                                            </li>
+                                        </ul>
+                                        <br/>
+                                        <strong>Creditor Account:</strong><br/>
+                                        <ul class="scopes-list padding">
+                                            <li><strong>Scheme name:</strong> <%=paymentsConsentResult.getData().getInitiation().getCreditorAccount().getSchemeName()%>
+                                            </li>
+                                            <li><strong>Identification:</strong> <%=paymentsConsentResult.getData().getInitiation().getCreditorAccount().getIdentification()%>
+                                            </li>
+                                            <li><strong>Name:</strong> <%=paymentsConsentResult.getData().getInitiation().getCreditorAccount().getName()%>
+                                            </li>
+                                            <li><strong>Secondary Identification:</strong> <%=paymentsConsentResult.getData().getInitiation().getCreditorAccount().getSecondaryIdentification()%>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <% if (paymentsSCARequired) { %>
+                                    <input type="checkbox" name="paymentsSCARequired" checked="false"> SCA approve<br>
+                                    <%}%>
+                                </div>
+                                <%}%>
+                            </div>
+                            <!-- Payments: END-->
                             <% } %>
 
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">

@@ -1,7 +1,7 @@
 package hu.dpc.openbanking.apigateway;
 
-import hu.dpc.openbanking.apigateway.entities.account_access_consents.ConsentResult;
-import hu.dpc.openbanking.apigateway.entities.update_consent.UpdateConsentRequest;
+import hu.dpc.openbanking.apigateway.entities.accounts.ConsentResult;
+import hu.dpc.openbanking.apigateway.entities.accounts.UpdateConsentRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +30,7 @@ public class ReportAuthorizeResult extends HttpServlet {
             resp.setStatus(500);
         }
 
-        final ConsentResult consentResult = (ConsentResult) request.getSession().getValue("ConsentResult");
+        final hu.dpc.openbanking.apigateway.entities.accounts.ConsentResult consentResult = (hu.dpc.openbanking.apigateway.entities.accounts.ConsentResult) request.getSession().getValue(ConsentResult.class.getName());
         if (null == consentResult) {
             System.out.println("ConsentResult in session is null");
         } else {
@@ -55,7 +55,7 @@ public class ReportAuthorizeResult extends HttpServlet {
         consent.setConsentId(requestContent.getConsentId());
         updateConsentRequest.setConsent(consent);
 
-        final boolean result = FineractGateway.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
+        final boolean result = FineractGatewayAccounts.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
 
         resp.setStatus(result ? 200 : 500);
     }

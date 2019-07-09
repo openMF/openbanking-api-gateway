@@ -60,7 +60,9 @@ public class HttpUtils {
             final boolean hasBody = !StringUtils.isNullOrEmpty(body);
 
             final URL url = new URL(query);
-            LOG.info(method.name() + " [" + url + "]" + (hasBody ? "\n" + body : ""));
+            String s = method.name() + " [" + url + "]" + (hasBody ? "\n" + body : "");
+            LOG.info(s);
+            System.out.println(s);
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             HttpsTrust.INSTANCE.trust(conn);
             conn.setRequestMethod(method.name());
@@ -86,7 +88,9 @@ public class HttpUtils {
             final String jsonResult = (null == resultStream) ? "" : IOUtils.toString(resultStream);
             conn.disconnect();
 
-            LOG.info(method.name() + " response [" + responseCode + "]:\n" + jsonResult);
+            s = method.name() + " response [" + responseCode + "]:\n" + jsonResult;
+            LOG.info(s);
+            System.out.println(s);
             final ObjectMapper mapper = new ObjectMapper();
             final T result = mapper.readValue(jsonResult, type);
             result.setResponseCode(responseCode);
