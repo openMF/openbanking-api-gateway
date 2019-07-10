@@ -26,7 +26,7 @@ public class FineractGatewayAccounts extends FineractGateway {
             final RequestContent requestContent = new RequestContent(request);
             final Map<String, String> headers = populateHeaders(requestContent);
             final OBReadConsentResponse1 result = HttpUtils.doGET(OBReadConsentResponse1.class, openBankingLogicURL + reviewUrl("/consents/" + requestContent.getConsentId()), headers);
-            request.getSession().putValue(OBReadConsentResponse1.class.getName(), result);
+            request.getSession().putValue("AccountConsent", result);
             return result;
         } catch (final Exception e) {
             LOG.error("Something went wrong!", e);

@@ -20,6 +20,7 @@ public class RequestContent {
     private String loggedInUser = "";
     private String tppClientId = "";
     private String consentId = "";
+    private String actionScope = "";
 
     public RequestContent(final HttpServletRequest request) throws MalformedURLException, UnsupportedEncodingException {
         this.request = request;
@@ -128,6 +129,10 @@ public class RequestContent {
                 }
             }
         }
+
+        {
+            actionScope = request.getParameter("actionScope");
+        }
     }
 
     public String getLoggedInUser() {
@@ -156,5 +161,9 @@ public class RequestContent {
 
     public String getConsentId() {
         return consentId;
+    }
+
+    public String getActionScope() {
+        return actionScope;
     }
 }

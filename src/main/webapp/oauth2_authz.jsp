@@ -52,6 +52,7 @@
 
     final boolean hasAccountsScope = openIdScopes.contains(ACCOUNTS_SCOPE);
     final boolean hasPaymentsScope = openIdScopes.contains(PAYMENTS_SCOPE);
+    final String actionScope = hasAccountsScope ? "accounts" : hasPaymentsScope ? "payments" : "";
 
     final PartyResponse partyResponse = FineractGateway.getParty(this.getServletConfig(), request);
     final @Nullable OBReadConsentResponse1 accountsConsentResult = hasAccountsScope ? FineractGatewayAccounts.getConsent(this.getServletConfig(), request) : null;
@@ -59,11 +60,7 @@
     final @Nullable OBWriteDomesticConsentResponse3 paymentsConsentResult = hasPaymentsScope ? FineractGatewayPayments.getConsent(this.getServletConfig(), request) : null;
 
     final boolean paymentsSCARequired;
-    if (hasPaymentsScope && null != paymentsConsentResult && null != paymentsConsentResult.getData() && null != paymentsConsentResult.getData().getScASupportData() && OBWriteFileConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.SCA == paymentsConsentResult.getData().getScASupportData().getAppliedAuthenticationApproach()) {
-        paymentsSCARequired = true;
-    } else {
-        paymentsSCARequired = false;
-    }
+    paymentsSCARequired = hasPaymentsScope && null != paymentsConsentResult && null != paymentsConsentResult.getData() && null != paymentsConsentResult.getData().getScASupportData() && OBWriteFileConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.SCA == paymentsConsentResult.getData().getScASupportData().getAppliedAuthenticationApproach();
 %>
 
 <html>
@@ -91,7 +88,7 @@
     // Report user approve
     function reportUserApprove() {
         console.log('Approved');
-        var respond = {status: 'approved', accounts: []};
+        var respond = {status: 'approved', actionScope: '<%=actionScope%>', accounts: []};
 
         var checkedAccounts = $(".accounts:checked");
         var checkedAccountLength = checkedAccounts.length;

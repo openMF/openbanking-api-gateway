@@ -13,9 +13,7 @@
 
 package uk.org.openbanking.v3_1_2.accounts;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import io.swagger.annotations.ApiModelProperty;
 import uk.org.openbanking.v3_1_2.commons.Account;
 
@@ -28,6 +26,8 @@ import java.util.Objects;
  * OBReadConsentResponse1Data
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJerseyServerCodegen", date = "2019-07-10T09:14:46.696896+02:00[Europe/Budapest]")
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OBReadConsentResponse1Data {
     @JsonProperty("Status")
     private StatusEnum status = null;
