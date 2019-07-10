@@ -14,10 +14,14 @@
 package uk.org.openbanking.v3_1_2.payments;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Identifies the nature of the postal address.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public enum OBAddressTypeCode {
 
     BUSINESS("Business"),

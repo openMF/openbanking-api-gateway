@@ -13,9 +13,7 @@
 
 package uk.org.openbanking.v3_1_2.payments;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.Size;
@@ -27,6 +25,8 @@ import java.util.Objects;
  * OBWriteInternationalScheduledResponse3Data
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJerseyServerCodegen", date = "2019-07-09T18:27:25.589536+02:00[Europe/Budapest]")
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OBWriteInternationalScheduledResponse3Data {
     @JsonProperty("Status")
     private StatusEnum status = null;

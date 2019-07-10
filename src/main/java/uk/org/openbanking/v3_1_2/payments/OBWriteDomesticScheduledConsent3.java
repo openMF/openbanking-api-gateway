@@ -13,6 +13,8 @@
 
 package uk.org.openbanking.v3_1_2.payments;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -23,6 +25,8 @@ import java.util.Objects;
  * OBWriteDomesticScheduledConsent3
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJerseyServerCodegen", date = "2019-07-09T18:27:25.589536+02:00[Europe/Budapest]")
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OBWriteDomesticScheduledConsent3 {
     @JsonProperty("Data")
     private OBWriteDomesticScheduledConsent3Data data = null;

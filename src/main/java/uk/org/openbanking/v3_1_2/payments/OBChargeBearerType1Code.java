@@ -14,10 +14,14 @@
 package uk.org.openbanking.v3_1_2.payments;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Specifies which party/parties will bear the charges associated with the processing of the payment transaction.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public enum OBChargeBearerType1Code {
 
     BORNEBYCREDITOR("BorneByCreditor"),

@@ -26,6 +26,8 @@
 <%@ page import="org.jetbrains.annotations.Nullable" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.identity.application.authentication.endpoint.util.Constants" %>
+<%@ page import="uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1" %>
+<%@ page import="uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1Data" %>
 <%@ page import="uk.org.openbanking.v3_1_2.commons.Account" %>
 <%@ page import="uk.org.openbanking.v3_1_2.payments.OBWriteDomesticConsentResponse3" %>
 <%@ page import="uk.org.openbanking.v3_1_2.payments.OBWriteFileConsent3DataSCASupportData" %>
@@ -52,7 +54,7 @@
     final boolean hasPaymentsScope = openIdScopes.contains(PAYMENTS_SCOPE);
 
     final PartyResponse partyResponse = FineractGateway.getParty(this.getServletConfig(), request);
-    final hu.dpc.openbanking.apigateway.entities.accounts.ConsentResult accountsConsentResult = hasAccountsScope ? FineractGatewayAccounts.getConsent(this.getServletConfig(), request) : null;
+    final @Nullable OBReadConsentResponse1 accountsConsentResult = hasAccountsScope ? FineractGatewayAccounts.getConsent(this.getServletConfig(), request) : null;
     final AccountHeldResponse accountHeldResponse = hasAccountsScope ? FineractGatewayAccounts.getAccountsHeld(this.getServletConfig(), request) : null;
     final @Nullable OBWriteDomesticConsentResponse3 paymentsConsentResult = hasPaymentsScope ? FineractGatewayPayments.getConsent(this.getServletConfig(), request) : null;
 
@@ -245,16 +247,16 @@
                                 </h5>
                                 <div class="border-gray margin-bottom-double">
                                     <div class="padding">
-                                        <strong>Consent Id:</strong> <%=accountsConsentResult.getData().getConsentId()%><br/>
-                                        <strong>Transaction from time:</strong> <%=accountsConsentResult.getData().getTransactionFromDateTime()%>
+                                        <strong>Consent Id:</strong> <%=Encode.forHtml(accountsConsentResult.getData().getConsentId())%><br/>
+                                        <strong>Transaction from time:</strong> <%=Encode.forHtml(accountsConsentResult.getData().getTransactionFromDateTime())%>
                                         <br/>
-                                        <strong>Transaction to time:</strong> <%=accountsConsentResult.getData().getTransactionToDateTime()%>
+                                        <strong>Transaction to time:</strong> <%=Encode.forHtml(accountsConsentResult.getData().getTransactionToDateTime())%>
                                         <br/>
                                         <strong>Permissions:</strong><br/>
                                         <ul class="scopes-list padding">
-                                            <% final List<String> consentPermissions = accountsConsentResult.getData().getPermissions();
+                                            <% final List<OBReadConsentResponse1Data.PermissionsEnum> consentPermissions = accountsConsentResult.getData().getPermissions();
                                                 for (int ii = 0; ii < consentPermissions.size(); ii++) {
-                                                    final String permission = consentPermissions.get(ii);%>
+                                                    final String permission = consentPermissions.get(ii).toString();%>
                                             <li><%=Encode.forHtml(permission)%>
                                             </li>
                                             <%}%>
@@ -296,42 +298,39 @@
                             <% if (hasPaymentsScope) { %>
                             <!-- Payments: BEGIN-->
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-top-double">
-                                <p>Based on <strong>Accounts</strong> scope requirements</p>
-                                <!-- Accounts permissions -->
+                                <p>Based on <strong>Payments</strong> scope requirements</p>
                                 <%{%>
-                                <h5 class="section-heading-5"><%=AuthenticationEndpointUtil.i18n(dpcResourceBundle, "accounts.permissions")%>
-                                </h5>
                                 <div class="border-gray margin-bottom-double">
                                     <div class="padding">
-                                        <strong>Consent Id:</strong> <%=paymentsConsentResult.getData().getConsentId()%><br/>
-                                        <strong>Status:</strong> <%=paymentsConsentResult.getData().getStatus()%><br/>
+                                        <strong>Consent Id:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getConsentId())%><br/>
+                                        <strong>Status:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getStatus().toString())%><br/>
                                         <br/>
                                         <strong>Debtor Account:</strong><br/>
                                         <ul class="scopes-list padding">
-                                            <li><strong>Scheme name:</strong> <%=paymentsConsentResult.getData().getInitiation().getDebtorAccount().getSchemeName()%>
+                                            <li><strong>Scheme name:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getSchemeName())%>
                                             </li>
-                                            <li><strong>Identification:</strong> <%=paymentsConsentResult.getData().getInitiation().getDebtorAccount().getIdentification()%>
+                                            <li><strong>Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getIdentification())%>
                                             </li>
-                                            <li><strong>Name:</strong> <%=paymentsConsentResult.getData().getInitiation().getDebtorAccount().getName()%>
+                                            <li><strong>Name:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getName())%>
                                             </li>
-                                            <li><strong>Secondary Identification:</strong> <%=paymentsConsentResult.getData().getInitiation().getDebtorAccount().getSecondaryIdentification()%>
+                                            <li><strong>Secondary Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getSecondaryIdentification())%>
                                             </li>
                                         </ul>
                                         <br/>
                                         <strong>Creditor Account:</strong><br/>
                                         <ul class="scopes-list padding">
-                                            <li><strong>Scheme name:</strong> <%=paymentsConsentResult.getData().getInitiation().getCreditorAccount().getSchemeName()%>
+                                            <li><strong>Scheme name:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getSchemeName())%>
                                             </li>
-                                            <li><strong>Identification:</strong> <%=paymentsConsentResult.getData().getInitiation().getCreditorAccount().getIdentification()%>
+                                            <li><strong>Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getIdentification())%>
                                             </li>
-                                            <li><strong>Name:</strong> <%=paymentsConsentResult.getData().getInitiation().getCreditorAccount().getName()%>
+                                            <li><strong>Name:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getName())%>
                                             </li>
-                                            <li><strong>Secondary Identification:</strong> <%=paymentsConsentResult.getData().getInitiation().getCreditorAccount().getSecondaryIdentification()%>
+                                            <li><strong>Secondary Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getSecondaryIdentification())%>
                                             </li>
                                         </ul>
                                     </div>
                                     <% if (paymentsSCARequired) { %>
-                                    <input type="checkbox" name="paymentsSCARequired" checked="false"> SCA approve<br>
+                                    <input type="checkbox" name="paymentsSCARequired"> SCA approve<br>
                                     <%}%>
                                 </div>
                                 <%}%>

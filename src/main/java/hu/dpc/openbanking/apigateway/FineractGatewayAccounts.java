@@ -3,12 +3,11 @@ package hu.dpc.openbanking.apigateway;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.dpc.common.http.HttpUtils;
 import hu.dpc.openbanking.apigateway.entities.accounts.AccountHeldResponse;
-import hu.dpc.openbanking.apigateway.entities.accounts.ConsentResult;
-import hu.dpc.openbanking.apigateway.entities.accounts.UpdateConsentRequest;
 import hu.dpc.openbanking.apigateway.entities.accounts.UpdateConsentResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jetbrains.annotations.Nullable;
+import uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -20,14 +19,14 @@ public class FineractGatewayAccounts extends FineractGateway {
     private static final Log LOG = LogFactory.getLog(FineractGatewayAccounts.class);
 
     @Nullable
-    public static ConsentResult getConsent(final ServletConfig servletConfig, final HttpServletRequest request) {
+    public static OBReadConsentResponse1 getConsent(final ServletConfig servletConfig, final HttpServletRequest request) {
         checkServletConfig(servletConfig);
 
         try {
             final RequestContent requestContent = new RequestContent(request);
             final Map<String, String> headers = populateHeaders(requestContent);
-            final ConsentResult result = HttpUtils.doGET(ConsentResult.class, openBankingLogicURL + reviewUrl("/consents/" + requestContent.getConsentId()), headers);
-            request.getSession().putValue(ConsentResult.class.getName(), result);
+            final OBReadConsentResponse1 result = HttpUtils.doGET(OBReadConsentResponse1.class, openBankingLogicURL + reviewUrl("/consents/" + requestContent.getConsentId()), headers);
+            request.getSession().putValue(OBReadConsentResponse1.class.getName(), result);
             return result;
         } catch (final Exception e) {
             LOG.error("Something went wrong!", e);
@@ -51,7 +50,7 @@ public class FineractGatewayAccounts extends FineractGateway {
         return null;
     }
 
-    public static boolean updateConsent(final ServletConfig servletConfig, final String consentId, final String userName, final UpdateConsentRequest updateConsentRequest) {
+    public static boolean updateConsent(final ServletConfig servletConfig, final String consentId, final String userName, final OBReadConsentResponse1 updateConsentRequest) {
         checkServletConfig(servletConfig);
 
         final ObjectMapper mapper = new ObjectMapper();

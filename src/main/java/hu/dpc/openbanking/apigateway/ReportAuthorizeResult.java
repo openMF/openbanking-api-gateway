@@ -1,11 +1,10 @@
 package hu.dpc.openbanking.apigateway;
 
-import hu.dpc.openbanking.apigateway.entities.accounts.ConsentResult;
-import hu.dpc.openbanking.apigateway.entities.accounts.UpdateConsentRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import uk.org.openbanking.v3_1_2.accounts.Consent;
+import uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1;
+import uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1Data;
 import uk.org.openbanking.v3_1_2.commons.Account;
 
 import javax.servlet.http.HttpServlet;
@@ -30,15 +29,15 @@ public class ReportAuthorizeResult extends HttpServlet {
             resp.setStatus(500);
         }
 
-        final hu.dpc.openbanking.apigateway.entities.accounts.ConsentResult consentResult = (hu.dpc.openbanking.apigateway.entities.accounts.ConsentResult) request.getSession().getValue(ConsentResult.class.getName());
+        final OBReadConsentResponse1 consentResult = (OBReadConsentResponse1) request.getSession().getValue(OBReadConsentResponse1.class.getName());
         if (null == consentResult) {
             System.out.println("ConsentResult in session is null");
         } else {
             System.out.println("ConsentResult in session is not null");
         }
 
-        final UpdateConsentRequest updateConsentRequest = new UpdateConsentRequest();
-        final Consent consent = new Consent();
+        final OBReadConsentResponse1 updateConsentRequest = new OBReadConsentResponse1();
+        final OBReadConsentResponse1Data consent = new OBReadConsentResponse1Data();
 
         if (null != consentResult) {
             consent.setPermissions(consentResult.getData().getPermissions());
@@ -53,7 +52,7 @@ public class ReportAuthorizeResult extends HttpServlet {
         consent.setAccounts(accounts);
         consent.setAction("Authorize");
         consent.setConsentId(requestContent.getConsentId());
-        updateConsentRequest.setConsent(consent);
+        updateConsentRequest.setData(consent);
 
         final boolean result = FineractGatewayAccounts.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
 
