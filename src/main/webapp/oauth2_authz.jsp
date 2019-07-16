@@ -59,8 +59,7 @@
     final AccountHeldResponse accountHeldResponse = hasAccountsScope ? FineractGatewayAccounts.getAccountsHeld(this.getServletConfig(), request) : null;
     final @Nullable OBWriteDomesticConsentResponse3 paymentsConsentResult = hasPaymentsScope ? FineractGatewayPayments.getConsent(this.getServletConfig(), request) : null;
 
-    final boolean paymentsSCARequired;
-    paymentsSCARequired = hasPaymentsScope && null != paymentsConsentResult && null != paymentsConsentResult.getData() && null != paymentsConsentResult.getData().getScASupportData() && OBWriteFileConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.SCA == paymentsConsentResult.getData().getScASupportData().getAppliedAuthenticationApproach();
+    final boolean paymentsSCARequired = hasPaymentsScope && null != paymentsConsentResult && null != paymentsConsentResult.getData() && null != paymentsConsentResult.getData().getScASupportData() && OBWriteFileConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.SCA == paymentsConsentResult.getData().getScASupportData().getAppliedAuthenticationApproach();
 %>
 
 <html>

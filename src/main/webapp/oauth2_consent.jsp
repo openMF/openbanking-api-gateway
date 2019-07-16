@@ -79,8 +79,7 @@
 
     final @Nullable OBWriteDomesticConsentResponse3 paymentsConsentResult = hasPaymentsScope ? FineractGatewayPayments.getConsent(this.getServletConfig(), request) : null;
 
-    final boolean paymentsSCARequired;
-    paymentsSCARequired = hasPaymentsScope && null != paymentsConsentResult && null != paymentsConsentResult.getData() && null != paymentsConsentResult.getData().getScASupportData() && OBWriteFileConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.SCA == paymentsConsentResult.getData().getScASupportData().getAppliedAuthenticationApproach();
+    final boolean paymentsSCARequired = hasPaymentsScope && null != paymentsConsentResult && null != paymentsConsentResult.getData() && null != paymentsConsentResult.getData().getScASupportData() && OBWriteFileConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.SCA == paymentsConsentResult.getData().getScASupportData().getAppliedAuthenticationApproach();
 %>
 
 <html>
@@ -431,10 +430,16 @@
                                             </li>
                                             <li><strong>Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getIdentification())%>
                                             </li>
-                                            <li><strong>Name:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getName())%>
+                                            <% String content = paymentsConsentResult.getData().getInitiation().getDebtorAccount().getName();
+                                                if (!hu.dpc.common.http.StringUtils.isNullOrEmpty(content)) { %>
+                                            <li><strong>Name:</strong> <%=Encode.forHtml(content)%>
                                             </li>
-                                            <li><strong>Secondary Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getSecondaryIdentification())%>
+                                            <% }
+                                                content = paymentsConsentResult.getData().getInitiation().getDebtorAccount().getSecondaryIdentification();
+                                                if (!hu.dpc.common.http.StringUtils.isNullOrEmpty(content)) { %>
+                                            <li><strong>Secondary Identification:</strong> <%=Encode.forHtml(content)%>
                                             </li>
+                                            <% } %>
                                         </ul>
                                         <br/>
                                         <strong>Creditor Account:</strong><br/>
@@ -443,10 +448,16 @@
                                             </li>
                                             <li><strong>Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getIdentification())%>
                                             </li>
-                                            <li><strong>Name:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getName())%>
+                                            <% content = paymentsConsentResult.getData().getInitiation().getCreditorAccount().getName();
+                                                if (!hu.dpc.common.http.StringUtils.isNullOrEmpty(content)) { %>
+                                            <li><strong>Name:</strong> <%=Encode.forHtml(content)%>
                                             </li>
-                                            <li><strong>Secondary Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getSecondaryIdentification())%>
+                                            <% }
+                                                content = paymentsConsentResult.getData().getInitiation().getCreditorAccount().getSecondaryIdentification();
+                                                if (!hu.dpc.common.http.StringUtils.isNullOrEmpty(content)) { %>
+                                            <li><strong>Secondary Identification:</strong> <%=Encode.forHtml(content)%>
                                             </li>
+                                            <% } %>
                                         </ul>
                                     </div>
                                     <% if (paymentsSCARequired) { %>
