@@ -20,6 +20,7 @@
 <%@ page import="hu.dpc.openbanking.apigateway.FineractGateway" %>
 <%@ page import="hu.dpc.openbanking.apigateway.FineractGatewayAccounts" %>
 <%@ page import="hu.dpc.openbanking.apigateway.FineractGatewayPayments" %>
+<%@ page import="hu.dpc.openbanking.apigateway.PaymentsHelper" %>
 <%@ page import="hu.dpc.openbanking.apigateway.entities.accounts.AccountHeldResponse" %>
 <%@ page import="hu.dpc.openbanking.apigateway.entities.accounts.PartyResponse" %>
 <%@ page import="org.apache.commons.collections.CollectionUtils" %>
@@ -29,7 +30,9 @@
 <%@ page import="uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1" %>
 <%@ page import="uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1Data" %>
 <%@ page import="uk.org.openbanking.v3_1_2.commons.Account" %>
+<%@ page import="uk.org.openbanking.v3_1_2.payments.OBChargeBearerType1Code" %>
 <%@ page import="uk.org.openbanking.v3_1_2.payments.OBWriteDomesticConsentResponse3" %>
+<%@ page import="uk.org.openbanking.v3_1_2.payments.OBWriteDomesticStandingOrderResponse4DataCharges" %>
 <%@ page import="uk.org.openbanking.v3_1_2.payments.OBWriteFileConsent3DataSCASupportData" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
@@ -337,6 +340,31 @@
                                             </li>
                                             <% } %>
                                         </ul>
+                                        <%
+                                            final List<OBWriteDomesticStandingOrderResponse4DataCharges> charges = paymentsConsentResult.getData().getCharges();
+                                            if (null != charges && !charges.isEmpty()) { %>
+                                        <br/>
+                                        <strong>Charges:</strong><br/>
+                                        <% PaymentsHelper.sortDomesticStandingOrderDataCharges(charges);
+                                            OBChargeBearerType1Code prevBearerType = null;
+                                            for (final OBWriteDomesticStandingOrderResponse4DataCharges charge : charges) {
+                                                if (null == prevBearerType) {
+                                                    prevBearerType = charge.getChargeBearer(); %>
+                                        <strong><%=Encode.forHtml(charge.getChargeBearer().toString())%>
+                                        </strong><br/>
+                                        <ul class="scopes-list padding">
+                                            <% } else if (!prevBearerType.equals(charge.getChargeBearer())) {
+                                                prevBearerType = charge.getChargeBearer(); %>
+                                        </ul>
+                                        <strong><%=Encode.forHtml(charge.getChargeBearer().toString())%>
+                                        </strong><br/>
+                                        <ul class="scopes-list padding">
+                                            <% } %>
+                                            <li><%=Encode.forHtml(PaymentsHelper.formatPaymentCharge(charge, false))%>
+                                            </li>
+                                            <% } %>
+                                        </ul>
+                                        <% } %>
                                     </div>
                                     <% if (paymentsSCARequired) { %>
                                     <input type="checkbox" name="paymentsSCARequired"> SCA approve<br>

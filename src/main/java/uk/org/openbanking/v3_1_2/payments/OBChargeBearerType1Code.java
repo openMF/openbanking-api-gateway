@@ -23,13 +23,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public enum OBChargeBearerType1Code {
-
     BORNEBYCREDITOR("BorneByCreditor"),
-
     BORNEBYDEBTOR("BorneByDebtor"),
-
     FOLLOWINGSERVICELEVEL("FollowingServiceLevel"),
-
     SHARED("Shared");
 
     private final String value;
