@@ -76,7 +76,6 @@
     final PartyResponse partyResponse = hasAccountsScope ? FineractGateway.getParty(this.getServletConfig(), request) : null;
     final @Nullable OBReadConsentResponse1 accountsConsentResult = hasAccountsScope ? FineractGatewayAccounts.getConsent(this.getServletConfig(), request) : null;
     final AccountHeldResponse accountHeldResponse = hasAccountsScope ? FineractGatewayAccounts.getAccountsHeld(this.getServletConfig(), request) : null;
-
     final @Nullable OBWriteDomesticConsentResponse3 paymentsConsentResult = hasPaymentsScope ? FineractGatewayPayments.getConsent(this.getServletConfig(), request) : null;
 
     final boolean paymentsSCARequired = hasPaymentsScope && null != paymentsConsentResult && null != paymentsConsentResult.getData() && null != paymentsConsentResult.getData().getScASupportData() && OBWriteFileConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.SCA == paymentsConsentResult.getData().getScASupportData().getAppliedAuthenticationApproach();
@@ -423,6 +422,7 @@
                                     <div class="padding">
                                         <strong>Consent Id:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getConsentId())%><br/>
                                         <strong>Status:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getStatus().toString())%><br/>
+                                        <strong>Amount:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getInstructedAmount().getAmount())%>&nbsp;<%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getInstructedAmount().getCurrency())%><br/>
                                         <br/>
                                         <strong>Debtor Account:</strong><br/>
                                         <ul class="scopes-list padding">

@@ -300,6 +300,7 @@
                                     <div class="padding">
                                         <strong>Consent Id:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getConsentId())%><br/>
                                         <strong>Status:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getStatus().toString())%><br/>
+                                        <strong>Amount:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getInstructedAmount().getAmount())%>&nbsp;<%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getInstructedAmount().getCurrency())%><br/>
                                         <br/>
                                         <strong>Debtor Account:</strong><br/>
                                         <ul class="scopes-list padding">
