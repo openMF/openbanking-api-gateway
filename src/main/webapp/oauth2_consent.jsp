@@ -17,6 +17,7 @@
   --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+<%@ page import="com.fasterxml.jackson.databind.ObjectMapper" %>
 <%@ page import="hu.dpc.openbanking.apigateway.FineractGateway" %>
 <%@ page import="hu.dpc.openbanking.apigateway.FineractGatewayAccounts" %>
 <%@ page import="hu.dpc.openbanking.apigateway.FineractGatewayPayments" %>
@@ -104,6 +105,43 @@
 </head>
 
 <body>
+<script type="text/javascript">
+    <%
+        final ObjectMapper mapper = new ObjectMapper();
+        if (hasAccountsScope) {
+            try {
+                final String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(partyResponse);
+    %>
+    var _partyResponse = <%=json%>;
+    <%
+        } catch (final Exception e) {
+        }
+        try {
+            final String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountsConsentResult);
+    %>
+    var _accountsConsentResult = <%=json%>;
+    <%
+        } catch (final Exception e) {
+        }
+        try {
+            final String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(accountHeldResponse);
+    %>
+    var _accountHeldResponse = <%=json%>;
+    <%
+            } catch (final Exception e) {
+            }
+        }
+        if (hasPaymentsScope) {
+            try {
+                final String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(paymentsConsentResult);
+    %>
+    var _paymentsConsentResult = <%=json%>;
+    <%
+        } catch (final Exception e) {
+        }
+        }
+    %>
+</script>
 
 <script type="text/javascript">
     // Report user approve
@@ -169,7 +207,7 @@
                 document.getElementById("profile").submit();
             } else {
                 $("#modal_consent_update_error").modal();
-                return;
+
             }
         } else {
             $("#modal_claim_validation").modal();
@@ -382,11 +420,15 @@
                                         <strong>Permissions:</strong><br/>
                                         <ul class="scopes-list padding">
                                             <% final List<OBReadConsentResponse1Data.PermissionsEnum> consentPermissions = accountsConsentResult.getData().getPermissions();
+                                                if (null != consentPermissions) {
                                                 for (int ii = 0; ii < consentPermissions.size(); ii++) {
                                                     final String permission = consentPermissions.get(ii).toString();%>
                                             <li><%=Encode.forHtml(permission)%>
                                             </li>
-                                            <%}%>
+                                            <%
+                                                    }
+                                                }
+                                            %>
                                         </ul>
                                     </div>
                                 </div>
