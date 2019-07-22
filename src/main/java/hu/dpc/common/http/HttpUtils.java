@@ -60,7 +60,7 @@ public class HttpUtils {
             final boolean hasBody = !StringUtils.isNullOrEmpty(body);
 
             final URL url = new URL(query);
-            String s = method.name() + " [" + url + "]" + (hasBody ? "\n" + body : "");
+            String s = method.name() + " [" + url + "]\r" + forDebugHeaders(headers) + (hasBody ? "\n" + body : "");
             LOG.info(s);
             System.out.println(s);
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -103,7 +103,21 @@ public class HttpUtils {
         }
     }
 
-    public static enum HTTP_METHOD {
+    /**
+     * Get headers values for printing debug purposes.
+     *
+     * @param headers
+     * @return
+     */
+    private static String forDebugHeaders(final Map<String, String> headers) {
+        final StringBuilder sbuf = new StringBuilder(1024);
+        for (final Map.Entry<String, String> item : headers.entrySet()) {
+            sbuf.append(item.getKey()).append(": ").append(item.getValue()).append("\r");
+        }
+        return sbuf.toString();
+    }
+
+    public enum HTTP_METHOD {
         GET, POST, PUT
     }
 

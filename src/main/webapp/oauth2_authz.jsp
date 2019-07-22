@@ -105,10 +105,12 @@
             data: respond,
             dataType: "json",
             success: function (result) {
-                console.log(result)
+                console.log(result);
+                return true;
             },
             error: function (error) {
-                console.log(error)
+                console.log(error);
+                return false;
             }
         });
     }
@@ -138,8 +140,9 @@
         $('#consent').val('approve');
 
         // Last action point, to catch event
-        reportUserApprove();
-        document.getElementById("profile").submit();
+        if (reportUserApprove()) {
+            document.getElementById("profile").submit();
+        }
     }
 
     function deny() {
