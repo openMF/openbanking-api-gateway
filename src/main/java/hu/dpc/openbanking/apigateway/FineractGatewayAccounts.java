@@ -1,6 +1,7 @@
 package hu.dpc.openbanking.apigateway;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hu.dpc.common.http.HTTPCallExecutionException;
 import hu.dpc.common.http.HttpUtils;
 import hu.dpc.openbanking.apigateway.entities.accounts.AccountHeldResponse;
 import hu.dpc.openbanking.apigateway.entities.accounts.UpdateConsentResponse;
@@ -50,7 +51,7 @@ public class FineractGatewayAccounts extends FineractGateway {
         return null;
     }
 
-    public static boolean updateConsent(final ServletConfig servletConfig, final String consentId, final String userName, final OBReadConsentResponse1 updateConsentRequest) {
+    public static UpdateConsentResponse updateConsent(final ServletConfig servletConfig, final String consentId, final String userName, final OBReadConsentResponse1 updateConsentRequest) throws HTTPCallExecutionException {
         checkServletConfig(servletConfig);
 
         final ObjectMapper mapper = new ObjectMapper();
@@ -64,11 +65,10 @@ public class FineractGatewayAccounts extends FineractGateway {
             headers.put("user-id", userName);
             headers.put("consent-id", consentId);
 
-            final UpdateConsentResponse response = HttpUtils.call(HttpUtils.HTTP_METHOD.PUT, UpdateConsentResponse.class, openBankingLogicURL + reviewUrl("/consents/" + consentId), headers, json);
-            return response.getResponseCode() == 200;
+            return HttpUtils.call(HttpUtils.HTTP_METHOD.PUT, UpdateConsentResponse.class, openBankingLogicURL + reviewUrl("/consents/" + consentId), headers, json);
         } catch (final Exception e) {
             LOG.error("Error on updateConsent", e);
-            return false;
+            throw new HTTPCallExecutionException(e);
         }
     }
 
