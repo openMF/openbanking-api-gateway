@@ -1,5 +1,6 @@
 package hu.dpc.openbanking.apigateway;
 
+import hu.dpc.openbanking.apigateway.entities.accounts.UpdateConsentResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,51 +20,60 @@ public class ReportAuthorizeResult extends HttpServlet {
 
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse resp) throws IOException {
-        final String jsonResult = IOUtils.toString(request.getInputStream());
-        System.out.println("Content: \n" + jsonResult);
+        try {
+            final String jsonResult = IOUtils.toString(request.getInputStream());
+            System.out.println("Content: \n" + jsonResult);
 
-        final RequestContent requestContent = new RequestContent(request);
+            final RequestContent requestContent = new RequestContent(request);
 
-        final boolean hasParams = (requestContent.hasLoggedInUser() && requestContent.hasTppClientId() && !requestContent.getAccounts().isEmpty());
-        if (!hasParams) {
+            final boolean hasParams = (requestContent.hasLoggedInUser() && requestContent.hasTppClientId() && !requestContent.getAccounts().isEmpty());
+            if (!hasParams) {
+                resp.setStatus(500);
+            }
+
+            final OBReadConsentResponse1 consentResultFromSession = (OBReadConsentResponse1) request.getSession().getValue("AccountConsent");
+            if (null == consentResultFromSession) {
+                System.out.println("ConsentResult in session is null");
+            } else {
+                System.out.println("ConsentResult in session is not null");
+            }
+
+            final OBReadConsentResponse1 updateConsentRequest = new OBReadConsentResponse1();
+            final OBReadConsentResponse1Data consent = new OBReadConsentResponse1Data();
+
+            if (null != consentResultFromSession) {
+                consent.setPermissions(consentResultFromSession.getData().getPermissions());
+            }
+
+            if (null != requestContent.getAccounts() && !requestContent.getAccounts().isEmpty()) {
+                final List<Account> accounts = new ArrayList<>();
+                for (final String acc : requestContent.getAccounts()) {
+                    final Account account = new Account();
+                    account.setAccountId(acc);
+                    accounts.add(account);
+                }
+                if (!accounts.isEmpty()) {
+                    consent.setAccounts(accounts);
+                }
+            }
+            consent.setAction("Authorize");
+            consent.setConsentId(requestContent.getConsentId());
+            updateConsentRequest.setData(consent);
+
+            final UpdateConsentResponse result;
+            if ("accounts".equals(requestContent.getActionScope())) {
+                result = FineractGatewayAccounts.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
+            } else if ("payments".equals(requestContent.getActionScope())) {
+                result = FineractGatewayPayments.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
+            } else {
+                result = new UpdateConsentResponse();
+                result.setResponseCode(500);
+            }
+            final boolean isSuccess = 200 == result.getResponseCode();
+            resp.setStatus(isSuccess ? 200 : 500);
+        } catch (final Exception e) {
+            LOG.warn("Error while update consent", e);
             resp.setStatus(500);
-        }
-
-        final OBReadConsentResponse1 consentResultFromSession = (OBReadConsentResponse1) request.getSession().getValue("AccountConsent");
-        if (null == consentResultFromSession) {
-            System.out.println("ConsentResult in session is null");
-        } else {
-            System.out.println("ConsentResult in session is not null");
-        }
-
-        final OBReadConsentResponse1 updateConsentRequest = new OBReadConsentResponse1();
-        final OBReadConsentResponse1Data consent = new OBReadConsentResponse1Data();
-
-        if (null != consentResultFromSession) {
-            consent.setPermissions(consentResultFromSession.getData().getPermissions());
-        }
-
-        if (null != requestContent.getAccounts() && !requestContent.getAccounts().isEmpty()) {
-            final List<Account> accounts = new ArrayList<>();
-            for (final String acc : requestContent.getAccounts()) {
-                final Account account = new Account();
-                account.setAccountId(acc);
-                accounts.add(account);
-            }
-            if (!accounts.isEmpty()) {
-                consent.setAccounts(accounts);
-            }
-        }
-        consent.setAction("Authorize");
-        consent.setConsentId(requestContent.getConsentId());
-        updateConsentRequest.setData(consent);
-
-        if ("accounts".equals(requestContent.getActionScope())) {
-            final boolean result = FineractGatewayAccounts.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
-            resp.setStatus(result ? 200 : 500);
-        } else if ("payments".equals(requestContent.getActionScope())) {
-            final boolean result = FineractGatewayPayments.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
-            resp.setStatus(result ? 200 : 500);
         }
 
     }
