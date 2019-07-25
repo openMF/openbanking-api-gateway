@@ -137,11 +137,11 @@
             respond.accounts.push(checkedAccounts[i].value);
         }
 
-        $.ajax({
+        return $.ajax({
             url: "reportAuthorizeResult",
             type: "POST",
             data: respond,
-            dataType: "json",
+            dataType: "text",
             success: function (result) {
                 console.log(result);
                 return true;
@@ -230,8 +230,10 @@
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <div class="alert alert-warning" role="alert">
                                     <p class="margin-bottom-double">
+                                        <% if (null != partyResponse) { %>
                                         Welcome <strong><%=partyResponse.getParties().getParty().getFullLegalName()%>
                                     </strong>,<br/>
+                                        <% } %>
                                         <strong><%=Encode.forHtml(app)%>
                                         </strong> <%=AuthenticationEndpointUtil.i18n(resourceBundle, "request.access.profile")%>
                                     </p>

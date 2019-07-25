@@ -156,11 +156,11 @@
             respond.accounts.push(checkedAccounts[i].value);
         }
 
-        $.ajax({
+        return $.ajax({
             url: "reportAuthorizeResult",
             type: "POST",
             data: respond,
-            dataType: "json",
+            dataType: "text",
             success: function (result) {
                 console.log(result);
                 return true;

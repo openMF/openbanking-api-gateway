@@ -3,6 +3,7 @@ package hu.dpc.openbanking.apigateway;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.dpc.common.http.HTTPCallExecutionException;
 import hu.dpc.common.http.HttpUtils;
+import hu.dpc.openbanking.apigateway.entities.RestResponseCommon;
 import hu.dpc.openbanking.apigateway.entities.accounts.UpdateConsentResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,6 +27,9 @@ public class FineractGatewayPayments extends FineractGateway {
         try {
             final RequestContent requestContent = new RequestContent(request);
             final Map<String, String> headers = populateHeaders(requestContent);
+            // Init consent
+            HttpUtils.call(HttpUtils.HTTP_METHOD.POST, RestResponseCommon.class, openBankingLogicURL + reviewUrl("/pis-consents/" + requestContent.getConsentId()), headers, null);
+            // Get consent
             return HttpUtils.doGET(OBWriteDomesticConsentResponse3.class, openBankingLogicURL + reviewUrl("/pis-consents/" + requestContent.getConsentId()), headers);
         } catch (final Exception e) {
             LOG.error("Something went wrong!", e);

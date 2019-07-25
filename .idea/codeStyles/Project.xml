@@ -7,9 +7,6 @@
       <option name="CLASS_NAMES_IN_JAVADOC" value="2" />
       <option name="USE_FQ_CLASS_NAMES" value="true" />
     </JavaCodeStyleSettings>
-    <ScalaCodeStyleSettings>
-      <option name="MULTILINE_STRING_SUPPORT" value="-1" />
-    </ScalaCodeStyleSettings>
     <codeStyleSettings language="JAVA">
       <arrangement>
         <groups>

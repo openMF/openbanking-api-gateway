@@ -61,16 +61,23 @@ public class ReportAuthorizeResult extends HttpServlet {
             updateConsentRequest.setData(consent);
 
             final UpdateConsentResponse result;
-            if ("accounts".equals(requestContent.getActionScope())) {
+            final String actionScope = requestContent.getActionScope();
+            if ("accounts".equals(actionScope)) {
                 result = FineractGatewayAccounts.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
-            } else if ("payments".equals(requestContent.getActionScope())) {
+            } else if ("payments".equals(actionScope)) {
                 result = FineractGatewayPayments.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
             } else {
                 result = new UpdateConsentResponse();
                 result.setResponseCode(500);
+                result.setRawResponse("Unknown action scope: " + actionScope);
             }
             final boolean isSuccess = 200 == result.getResponseCode();
             resp.setStatus(isSuccess ? 200 : 500);
+            resp.setContentType("text/plain");
+            resp.setCharacterEncoding("utf-8");
+            if (!isSuccess) {
+                resp.getWriter().println(result.getRawResponse());
+            }
         } catch (final Exception e) {
             LOG.warn("Error while update consent", e);
             resp.setStatus(500);
