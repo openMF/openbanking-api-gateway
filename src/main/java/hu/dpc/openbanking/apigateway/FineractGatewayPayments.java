@@ -7,6 +7,7 @@ import hu.dpc.openbanking.apigateway.entities.RestResponseCommon;
 import hu.dpc.openbanking.apigateway.entities.accounts.UpdateConsentResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1;
 import uk.org.openbanking.v3_1_2.payments.OBWriteDomesticConsentResponse3;
@@ -28,7 +29,12 @@ public class FineractGatewayPayments extends FineractGateway {
             final RequestContent requestContent = new RequestContent(request);
             final Map<String, String> headers = populateHeaders(requestContent);
             // Init consent
-            HttpUtils.call(HttpUtils.HTTP_METHOD.POST, RestResponseCommon.class, openBankingLogicURL + reviewUrl("/pis-consents/" + requestContent.getConsentId()), headers, null);
+            @NotNull RestResponseCommon initPaymentResult = HttpUtils.call(HttpUtils.HTTP_METHOD.POST, RestResponseCommon.class, openBankingLogicURL + reviewUrl("/pis-consents/" + requestContent.getConsentId()), headers, null);
+            int initPaymentResponseCode = initPaymentResult.getResponseCode();
+            if (initPaymentResponseCode < 200 || initPaymentResponseCode >= 300) {
+                LOG.error("Payment initialisation error!");
+                return null;
+            }
             // Get consent
             return HttpUtils.doGET(OBWriteDomesticConsentResponse3.class, openBankingLogicURL + reviewUrl("/pis-consents/" + requestContent.getConsentId()), headers);
         } catch (final Exception e) {

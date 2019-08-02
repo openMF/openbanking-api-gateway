@@ -18,10 +18,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ page import="com.fasterxml.jackson.databind.ObjectMapper" %>
-<%@ page import="hu.dpc.openbanking.apigateway.FineractGateway" %>
-<%@ page import="hu.dpc.openbanking.apigateway.FineractGatewayAccounts" %>
-<%@ page import="hu.dpc.openbanking.apigateway.FineractGatewayPayments" %>
-<%@ page import="hu.dpc.openbanking.apigateway.PaymentsHelper" %>
+<%@ page import="hu.dpc.openbanking.apigateway.*" %>
 <%@ page import="hu.dpc.openbanking.apigateway.entities.accounts.AccountHeldResponse" %>
 <%@ page import="hu.dpc.openbanking.apigateway.entities.accounts.PartyResponse" %>
 <%@ page import="org.apache.commons.collections.CollectionUtils" %>
@@ -54,9 +51,11 @@
             .filter(x -> !StringUtils.equalsIgnoreCase(x, "openid"))
             .collect(Collectors.toList());
 
-    final boolean hasAccountsScope = openIdScopes.contains(ACCOUNTS_SCOPE);
-    final boolean hasPaymentsScope = openIdScopes.contains(PAYMENTS_SCOPE);
-    final String actionScope = hasAccountsScope ? "accounts" : hasPaymentsScope ? "payments" : "";
+    // Determine consentType
+    final RequestContent requestContent = new RequestContent(request);
+    final String actionScope = requestContent.getConsentType();
+    final boolean hasAccountsScope = ACCOUNTS_SCOPE.equals(actionScope);
+    final boolean hasPaymentsScope = PAYMENTS_SCOPE.equals(actionScope);
 
     final PartyResponse partyResponse = FineractGateway.getParty(this.getServletConfig(), request);
     final @Nullable OBReadConsentResponse1 accountsConsentResult = hasAccountsScope ? FineractGatewayAccounts.getConsent(this.getServletConfig(), request) : null;

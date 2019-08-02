@@ -1,6 +1,7 @@
 package hu.dpc.openbanking.apigateway;
 
 import hu.dpc.common.http.HttpUtils;
+import hu.dpc.common.http.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -21,7 +22,15 @@ public class RequestContent {
     private String tppClientId = "";
     private String consentId = "";
     private String actionScope = "";
+    private String consentType = "";
 
+    /**
+     * Try to extract values from difference levels.
+     *
+     * @param request
+     * @throws MalformedURLException
+     * @throws UnsupportedEncodingException
+     */
     public RequestContent(final HttpServletRequest request) throws MalformedURLException, UnsupportedEncodingException {
         this.request = request;
 
@@ -52,17 +61,7 @@ public class RequestContent {
         LOG.info(s);
         if (null != spQueryParams) {
             final Map<String, String> queryParams = HttpUtils.splitQuery(new URL("http://x/x?" + spQueryParams));
-            if (null != queryParams) {
-                tppClientId = queryParams.get("client_id");
-                s = "tppClientId: [{" + tppClientId + "}]";
-                System.out.println(s);
-                LOG.info(s);
-
-                consentId = queryParams.get("consentId");
-                s = "consentId: [{" + consentId + "}]";
-                System.out.println(s);
-                LOG.info(s);
-            }
+            extractValues(queryParams);
         }
 
 
@@ -71,26 +70,7 @@ public class RequestContent {
             final Map<String, String> refererParams = HttpUtils.splitQuery(new URL(referer));
 
             if (null != refererParams) {
-                if (null == loggedInUser || loggedInUser.isEmpty()) {
-                    loggedInUser = refererParams.get("loggedInUser");
-                    s = "loggedInUser from referer: [{" + loggedInUser + "}]";
-                    System.out.println(s);
-                    LOG.info(s);
-                }
-
-                if (null == tppClientId || tppClientId.isEmpty()) {
-                    tppClientId = refererParams.get("client_id");
-                    s = "tppClientId from referer: [{" + tppClientId + "}]";
-                    System.out.println(s);
-                    LOG.info(s);
-                }
-
-                if (null == consentId || consentId.isEmpty()) {
-                    consentId = refererParams.get("consentId");
-                    s = "consentId from referer: [{" + consentId + "}]";
-                    System.out.println(s);
-                    LOG.info(s);
-                }
+                extractValues(refererParams);
 
                 final String spQueryParams2 = refererParams.get("spQueryParams");
                 s = "spQueryParams from referer: [{" + spQueryParams2 + "}]";
@@ -98,21 +78,7 @@ public class RequestContent {
                 LOG.info(s);
                 if (null != spQueryParams2) {
                     final Map<String, String> queryParams2 = HttpUtils.splitQuery(new URL("http://x/x?" + spQueryParams2));
-                    if (null != queryParams2) {
-                        if (null == tppClientId || tppClientId.isEmpty()) {
-                            tppClientId = queryParams2.get("client_id");
-                            s = "tppClientId from referer spQ: [{" + tppClientId + "}]";
-                            System.out.println(s);
-                            LOG.info(s);
-                        }
-
-                        if (null == consentId || consentId.isEmpty()) {
-                            consentId = queryParams2.get("consentId");
-                            s = "consentId referer spQ: [{" + consentId + "}]";
-                            System.out.println(s);
-                            LOG.info(s);
-                        }
-                    }
+                    extractValues(queryParams2);
                 }
             }
         }
@@ -132,6 +98,51 @@ public class RequestContent {
 
         {
             actionScope = request.getParameter("actionScope");
+        }
+    }
+
+    /**
+     * Try to extract values if already has no value.
+     *
+     * @param queryParams
+     */
+    private void extractValues(final Map<String, String> queryParams) {
+        if (null == queryParams) return;
+        String s;
+        if (StringUtils.isNullOrEmpty(loggedInUser)) {
+            loggedInUser = queryParams.get("loggedInUser");
+            if (!StringUtils.isNullOrEmpty(loggedInUser)) {
+                s = "loggedInUser: [{" + loggedInUser + "}]";
+                System.out.println(s);
+                LOG.info(s);
+            }
+        }
+
+        if (StringUtils.isNullOrEmpty(tppClientId)) {
+            tppClientId = queryParams.get("client_id");
+            if (!StringUtils.isNullOrEmpty(tppClientId)) {
+                s = "tppClientId: [{" + tppClientId + "}]";
+                System.out.println(s);
+                LOG.info(s);
+            }
+        }
+
+        if (StringUtils.isNullOrEmpty(consentId)) {
+            consentId = queryParams.get("consentId");
+            if (!StringUtils.isNullOrEmpty(consentId)) {
+                s = "consentId: [{" + consentId + "}]";
+                System.out.println(s);
+                LOG.info(s);
+            }
+        }
+
+        if (StringUtils.isNullOrEmpty(consentType)) {
+            consentType = queryParams.get("consentType");
+            if (!StringUtils.isNullOrEmpty(consentType)) {
+                s = "consentType: [{" + consentType + "}]";
+                System.out.println(s);
+                LOG.info(s);
+            }
         }
     }
 
@@ -165,5 +176,9 @@ public class RequestContent {
 
     public String getActionScope() {
         return actionScope;
+    }
+
+    public String getConsentType() {
+        return consentType;
     }
 }
