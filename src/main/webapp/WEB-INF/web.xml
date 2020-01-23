@@ -90,7 +90,7 @@
 
     <context-param>
         <param-name>openbanking.logic.url</param-name>
-        <param-value>https://a3c81e50-952b-4a4c-ae82-d6a98735e7ac.mock.pstmn.io</param-value>
+        <param-value>http://172.16.2.4/accessschema/ob</param-value>
         <!-- param-value>http://lion.mlabs.dpc.hu/accessschema/ob</param-value -->
         <!-- param-value>http://elephant.mlabs.dpc.hu/accessschema/ob</param-value -->
     </context-param>
