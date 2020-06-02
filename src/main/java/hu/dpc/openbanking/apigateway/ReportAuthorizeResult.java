@@ -11,7 +11,6 @@ import uk.org.openbanking.v3_1_2.commons.Account;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class ReportAuthorizeResult extends HttpServlet {
     private static final Log LOG = LogFactory.getLog(ReportAuthorizeResult.class);
 
     @Override
-    protected void doPost(final HttpServletRequest request, final HttpServletResponse resp) throws IOException {
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse resp) {
         try {
             final String jsonResult = IOUtils.toString(request.getInputStream());
             System.out.println("Content: \n" + jsonResult);
@@ -67,11 +66,13 @@ public class ReportAuthorizeResult extends HttpServlet {
             } else if ("payments".equals(actionScope)) {
                 result = FineractGatewayPayments.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
             } else {
+                System.out.println("Unknown action scope: " + actionScope);
                 result = new UpdateConsentResponse();
                 result.setResponseCode(500);
                 result.setRawResponse("Unknown action scope: " + actionScope);
             }
             final boolean isSuccess = 200 == result.getResponseCode();
+            System.out.println("Response code: " + result.getResponseCode());
             resp.setStatus(isSuccess ? 200 : 500);
             resp.setContentType("text/plain");
             resp.setCharacterEncoding("utf-8");
@@ -79,6 +80,7 @@ public class ReportAuthorizeResult extends HttpServlet {
                 resp.getWriter().println(result.getRawResponse());
             }
         } catch (final Exception e) {
+            e.printStackTrace();
             LOG.warn("Error while update consent", e);
             resp.setStatus(500);
         }

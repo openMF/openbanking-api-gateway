@@ -98,6 +98,7 @@ public class HttpUtils {
 
             return result;
         } catch (final Exception e) {
+            e.printStackTrace();
             LOG.error("Something went wrong!", e);
             throw new HTTPCallExecutionException(e);
         }

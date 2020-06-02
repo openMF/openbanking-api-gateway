@@ -30,6 +30,7 @@ public class FineractGatewayAccounts extends FineractGateway {
             request.getSession().putValue("AccountConsent", result);
             return result;
         } catch (final Exception e) {
+            e.printStackTrace();
             LOG.error("Something went wrong!", e);
         }
 
@@ -45,6 +46,7 @@ public class FineractGatewayAccounts extends FineractGateway {
             final Map<String, String> headers = populateHeaders(requestContent);
             return HttpUtils.doGET(AccountHeldResponse.class, openBankingLogicURL + reviewUrl("/consents/" + requestContent.getConsentId() + "/accounts"), headers);
         } catch (final Exception e) {
+            e.printStackTrace();
             LOG.error("Something went wrong!", e);
         }
 
@@ -67,6 +69,7 @@ public class FineractGatewayAccounts extends FineractGateway {
 
             return HttpUtils.call(HttpUtils.HTTP_METHOD.PUT, UpdateConsentResponse.class, openBankingLogicURL + reviewUrl("/consents/" + consentId), headers, json);
         } catch (final Exception e) {
+            e.printStackTrace();
             LOG.error("Error on updateConsent", e);
             throw new HTTPCallExecutionException(e);
         }
