@@ -5,8 +5,6 @@ import hu.dpc.common.http.HTTPCallExecutionException;
 import hu.dpc.common.http.HttpUtils;
 import hu.dpc.openbanking.apigateway.entities.accounts.AccountHeldResponse;
 import hu.dpc.openbanking.apigateway.entities.accounts.UpdateConsentResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jetbrains.annotations.Nullable;
 import uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1;
 
@@ -16,9 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class FineractGatewayAccounts extends FineractGateway {
-    private static final Log LOG = LogFactory.getLog(FineractGatewayAccounts.class);
+import static hu.dpc.common.http.StringUtils.error;
 
+public class FineractGatewayAccounts extends FineractGateway {
     @Nullable
     public static OBReadConsentResponse1 getConsent(final ServletConfig servletConfig, final HttpServletRequest request) {
         checkServletConfig(servletConfig);
@@ -30,8 +28,7 @@ public class FineractGatewayAccounts extends FineractGateway {
             request.getSession().setAttribute("AccountConsent", result);
             return result;
         } catch (final Exception e) {
-            e.printStackTrace();
-            LOG.error("Something went wrong!", e);
+            error("Something went wrong!", e);
         }
 
         return null;
@@ -46,8 +43,7 @@ public class FineractGatewayAccounts extends FineractGateway {
             final Map<String, String> headers = populateHeaders(requestContent);
             return HttpUtils.doGET(AccountHeldResponse.class, openBankingLogicURL + reviewUrl("/consents/" + requestContent.getConsentId() + "/accounts"), headers);
         } catch (final Exception e) {
-            e.printStackTrace();
-            LOG.error("Something went wrong!", e);
+            error("Something went wrong!", e);
         }
 
         return null;
@@ -69,8 +65,7 @@ public class FineractGatewayAccounts extends FineractGateway {
 
             return HttpUtils.call(HttpUtils.HTTP_METHOD.PUT, UpdateConsentResponse.class, openBankingLogicURL + reviewUrl("/consents/" + consentId), headers, json);
         } catch (final Exception e) {
-            e.printStackTrace();
-            LOG.error("Error on updateConsent", e);
+            error("Error on updateConsent", e);
             throw new HTTPCallExecutionException(e);
         }
     }

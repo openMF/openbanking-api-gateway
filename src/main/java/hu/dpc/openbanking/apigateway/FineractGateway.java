@@ -2,8 +2,6 @@ package hu.dpc.openbanking.apigateway;
 
 import hu.dpc.common.http.HttpUtils;
 import hu.dpc.openbanking.apigateway.entities.accounts.PartyResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,9 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class FineractGateway {
-    private static final Log LOG = LogFactory.getLog(FineractGateway.class);
+import static hu.dpc.common.http.StringUtils.error;
+import static hu.dpc.common.http.StringUtils.info;
 
+public class FineractGateway {
     static String openBankingLogicURL = null;
     private static String mockParamName = null;
     private static String mockParamValue = null;
@@ -30,7 +29,7 @@ public class FineractGateway {
 
             return HttpUtils.doGET(PartyResponse.class, openBankingLogicURL + reviewUrl("/consents/" + requestContent.getConsentId() + "/party"), headers);
         } catch (final Exception e) {
-            LOG.error("Something went wrong!", e);
+            error("Something went wrong!", e);
         }
 
         return null;
@@ -38,18 +37,16 @@ public class FineractGateway {
 
     protected static void checkServletConfig(final ServletConfig servletConfig) {
         if (null == openBankingLogicURL) {
-            synchronized (LOG) {
-                openBankingLogicURL = servletConfig.getServletContext().getInitParameter("openbanking.logic.url");
-                LOG.info("openbanking.logic.url=[" + openBankingLogicURL + "]");
-                mockParamName = servletConfig.getServletContext().getInitParameter("openbanking.logic.mock.param-name");
-                LOG.info("openbanking.logic.mock.param-name=[" + mockParamName + "]");
-                mockParamValue = servletConfig.getServletContext().getInitParameter("openbanking.logic.mock.param-value");
+            openBankingLogicURL = servletConfig.getServletContext().getInitParameter("openbanking.logic.url");
+            info("openbanking.logic.url=[" + openBankingLogicURL + "]");
+            mockParamName = servletConfig.getServletContext().getInitParameter("openbanking.logic.mock.param-name");
+            info("openbanking.logic.mock.param-name=[" + mockParamName + "]");
+            mockParamValue = servletConfig.getServletContext().getInitParameter("openbanking.logic.mock.param-value");
 
-                if (null != mockParamName && null == mockParamValue) {
-                    mockParamValue = "";
-                }
-                LOG.info("openbanking.logic.mock.param-value=[" + mockParamValue + "]");
+            if (null != mockParamName && null == mockParamValue) {
+                mockParamValue = "";
             }
+            info("openbanking.logic.mock.param-value=[" + mockParamValue + "]");
         }
     }
 

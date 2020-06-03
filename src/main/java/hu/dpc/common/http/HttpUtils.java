@@ -3,8 +3,6 @@ package hu.dpc.common.http;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.dpc.openbanking.apigateway.entities.RestResponseCommon;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -19,11 +17,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static hu.dpc.common.http.StringUtils.error;
+import static hu.dpc.common.http.StringUtils.info;
+
 @ParametersAreNonnullByDefault
 public class HttpUtils {
-
-    private static final Log LOG = LogFactory.getLog(HttpUtils.class);
-
     /**
      * Split url query params
      *
@@ -60,9 +58,7 @@ public class HttpUtils {
             final boolean hasBody = !StringUtils.isNullOrEmpty(body);
 
             final URL url = new URL(query);
-            String s = method.name() + " [" + url + "]\n" + forDebugHeaders(headers) + (hasBody ? "\n" + body : "");
-            LOG.info(s);
-            System.out.println(s);
+            info(method.name() + " [" + url + "]\n" + forDebugHeaders(headers) + (hasBody ? "\n" + body : ""));
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             HttpsTrust.INSTANCE.trust(conn);
             conn.setRequestMethod(method.name());
@@ -88,9 +84,7 @@ public class HttpUtils {
             final String jsonResult = (null == resultStream) ? "" : IOUtils.toString(resultStream);
             conn.disconnect();
 
-            s = method.name() + " response [" + responseCode + "]:\n" + jsonResult;
-            LOG.info(s);
-            System.out.println(s);
+            info(method.name() + " response [" + responseCode + "]:\n" + jsonResult);
             final ObjectMapper mapper = new ObjectMapper();
             final T result = mapper.readValue(jsonResult, type);
             result.setResponseCode(responseCode);
@@ -98,8 +92,7 @@ public class HttpUtils {
 
             return result;
         } catch (final Exception e) {
-            e.printStackTrace();
-            LOG.error("Something went wrong!", e);
+            error("Something went wrong!", e);
             throw new HTTPCallExecutionException(e);
         }
     }
