@@ -11,8 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static hu.dpc.common.http.StringUtils.error;
-import static hu.dpc.common.http.StringUtils.info;
+import static hu.dpc.common.http.StringUtils.*;
 
 public class FineractGateway {
     static String openBankingLogicURL = null;
@@ -21,6 +20,7 @@ public class FineractGateway {
 
     @Nullable
     public static PartyResponse getParty(final ServletConfig servletConfig, final HttpServletRequest request) {
+        debug("Called FineractGateway.getParty");
         checkServletConfig(servletConfig);
 
         try {

@@ -16,11 +16,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static hu.dpc.common.http.StringUtils.debug;
 import static hu.dpc.common.http.StringUtils.error;
 
 public class FineractGatewayPayments extends FineractGateway {
     @Nullable
     public static OBWriteDomesticConsentResponse3 getConsent(final ServletConfig servletConfig, final HttpServletRequest request) {
+        debug("Called FineractGatewayPayments.getConsent");
         checkServletConfig(servletConfig);
 
         try {
@@ -43,6 +45,7 @@ public class FineractGatewayPayments extends FineractGateway {
     }
 
     public static UpdateConsentResponse updateConsent(final ServletConfig servletConfig, final String consentId, final String userName, final OBReadConsentResponse1 updateConsentRequest) throws HTTPCallExecutionException {
+        debug("Called FineractGatewayPayments.updateConsent");
         checkServletConfig(servletConfig);
 
         final ObjectMapper mapper = new ObjectMapper();
