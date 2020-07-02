@@ -184,4 +184,19 @@ public class RequestContent {
     private String getQueryParamValue(final Map<String, String> queryParams, final String paramName) {
         return org.apache.commons.lang3.StringUtils.trimToEmpty(queryParams.get(paramName));
     }
+
+    public void debug() {
+        final StringBuilder sbuf = new StringBuilder();
+        sbuf
+                .append("loggedInUser=[" + loggedInUser + "]\n")
+                .append("tppClientId =[" + tppClientId + "]\n")
+                .append("consentId   =[" + consentId + "]\n")
+                .append("actionScope =[" + actionScope + "]\n")
+                .append("consentType =[" + consentType + "]\n")
+                .append("accounts    =[" + accounts.size() + "]\n");
+        for (final String account : accounts) {
+            sbuf.append(account).append('\n');
+        }
+        System.out.println(sbuf.toString());
+    }
 }

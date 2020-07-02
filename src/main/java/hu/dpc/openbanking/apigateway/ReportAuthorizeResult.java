@@ -35,12 +35,9 @@ public class ReportAuthorizeResult extends HttpServlet {
             debug("Content:\n" + jsonResult);
 
             final RequestContent requestContent = new RequestContent(request);
-            final String actionScope = requestContent.getActionScope();
+            requestContent.debug();
 
-            debug("hasLoggedInUser: " + requestContent.hasLoggedInUser());
-            debug("hasTppClientId: " + requestContent.hasTppClientId());
-            debug("getAccounts size: " + requestContent.getAccounts().size());
-            final boolean hasParams = (requestContent.hasLoggedInUser() && requestContent.hasTppClientId() && actionScope.isEmpty());
+            final boolean hasParams = (requestContent.hasLoggedInUser() && requestContent.hasTppClientId());
             if (!hasParams) {
                 debug("No hasParams! Return status 500!");
                 resp.setStatus(500);
@@ -77,6 +74,7 @@ public class ReportAuthorizeResult extends HttpServlet {
             updateConsentRequest.setData(consent);
 
             final UpdateConsentResponse result;
+            final String actionScope = requestContent.getActionScope();
             debug("actionScope: " + actionScope);
             if ("accounts".equals(actionScope)) {
                 result = FineractGatewayAccounts.updateConsent(this.getServletConfig(),
