@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReportAuthorizeResult extends HttpServlet {
+    private static final long serialVersionUID = -6738226448116383118L;
+
     private static void debug(final String str) {
         System.out.println(str);
     }
@@ -33,8 +35,12 @@ public class ReportAuthorizeResult extends HttpServlet {
             debug("Content:\n" + jsonResult);
 
             final RequestContent requestContent = new RequestContent(request);
+            final String actionScope = requestContent.getActionScope();
 
-            final boolean hasParams = (requestContent.hasLoggedInUser() && requestContent.hasTppClientId() && !requestContent.getAccounts().isEmpty());
+            debug("hasLoggedInUser: " + requestContent.hasLoggedInUser());
+            debug("hasTppClientId: " + requestContent.hasTppClientId());
+            debug("getAccounts size: " + requestContent.getAccounts().size());
+            final boolean hasParams = (requestContent.hasLoggedInUser() && requestContent.hasTppClientId() && actionScope.isEmpty());
             if (!hasParams) {
                 debug("No hasParams! Return status 500!");
                 resp.setStatus(500);
@@ -71,12 +77,17 @@ public class ReportAuthorizeResult extends HttpServlet {
             updateConsentRequest.setData(consent);
 
             final UpdateConsentResponse result;
-            final String actionScope = requestContent.getActionScope();
             debug("actionScope: " + actionScope);
             if ("accounts".equals(actionScope)) {
-                result = FineractGatewayAccounts.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
+                result = FineractGatewayAccounts.updateConsent(this.getServletConfig(),
+                        requestContent.getConsentId(),
+                        requestContent.getLoggedInUser(),
+                        updateConsentRequest);
             } else if ("payments".equals(actionScope)) {
-                result = FineractGatewayPayments.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
+                result = FineractGatewayPayments.updateConsent(this.getServletConfig(),
+                        requestContent.getConsentId(),
+                        requestContent.getLoggedInUser(),
+                        updateConsentRequest);
             } else {
                 debug("Unknown action scope: " + actionScope);
                 result = new UpdateConsentResponse();

@@ -109,7 +109,7 @@ public class RequestContent {
         }
         String s;
         if (StringUtils.isNullOrEmpty(loggedInUser)) {
-            loggedInUser = queryParams.get("loggedInUser");
+            loggedInUser = getQueryParamValue(queryParams, "loggedInUser");
             if (!StringUtils.isNullOrEmpty(loggedInUser)) {
                 s = "loggedInUser: [{" + loggedInUser + "}]";
                 debug(s);
@@ -117,7 +117,7 @@ public class RequestContent {
         }
 
         if (StringUtils.isNullOrEmpty(tppClientId)) {
-            tppClientId = queryParams.get("client_id");
+            tppClientId = getQueryParamValue(queryParams, "client_id");
             if (!StringUtils.isNullOrEmpty(tppClientId)) {
                 s = "tppClientId: [{" + tppClientId + "}]";
                 debug(s);
@@ -125,7 +125,7 @@ public class RequestContent {
         }
 
         if (StringUtils.isNullOrEmpty(consentId)) {
-            consentId = queryParams.get("consentId");
+            consentId = getQueryParamValue(queryParams, "consentId");
             if (!StringUtils.isNullOrEmpty(consentId)) {
                 s = "consentId: [{" + consentId + "}]";
                 debug(s);
@@ -133,7 +133,7 @@ public class RequestContent {
         }
 
         if (StringUtils.isNullOrEmpty(consentType)) {
-            consentType = queryParams.get("consentType");
+            consentType = getQueryParamValue(queryParams, "consentType");
             if (!StringUtils.isNullOrEmpty(consentType)) {
                 s = "consentType: [{" + consentType + "}]";
                 debug(s);
@@ -158,15 +158,19 @@ public class RequestContent {
     }
 
     public boolean hasLoggedInUser() {
-        return (null != loggedInUser && !loggedInUser.isEmpty());
+        return !StringUtils.isNullOrEmpty(loggedInUser);
     }
 
     public boolean hasTppClientId() {
-        return (null != tppClientId && !tppClientId.isEmpty());
+        return !StringUtils.isNullOrEmpty(tppClientId);
     }
 
     public String getConsentId() {
         return consentId;
+    }
+
+    public boolean hasConsentId() {
+        return !StringUtils.isNullOrEmpty(consentId);
     }
 
     public String getActionScope() {
@@ -175,5 +179,9 @@ public class RequestContent {
 
     public String getConsentType() {
         return consentType;
+    }
+
+    private String getQueryParamValue(final Map<String, String> queryParams, final String paramName) {
+        return org.apache.commons.lang3.StringUtils.trimToEmpty(queryParams.get(paramName));
     }
 }
