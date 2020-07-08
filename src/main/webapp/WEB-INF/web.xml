@@ -90,7 +90,7 @@
 
     <context-param>
         <param-name>openbanking.logic.url</param-name>
-        <param-value>http://172.16.2.4/accessschema/ob</param-value>
+        <param-value>http://gorilla.mifos.io:63031/adapter/ob</param-value>
         <!-- param-value>http://lion.mlabs.dpc.hu/accessschema/ob</param-value -->
         <!-- param-value>http://elephant.mlabs.dpc.hu/accessschema/ob</param-value -->
     </context-param>
