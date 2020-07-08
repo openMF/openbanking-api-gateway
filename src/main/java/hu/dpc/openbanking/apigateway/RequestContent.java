@@ -182,7 +182,7 @@ public class RequestContent {
     }
 
     private String getQueryParamValue(final Map<String, String> queryParams, final String paramName) {
-        return org.apache.commons.lang3.StringUtils.trimToEmpty(queryParams.get(paramName));
+        return org.apache.commons.lang.StringUtils.trimToEmpty(queryParams.get(paramName));
     }
 
     public void debug() {

@@ -17,7 +17,7 @@
   --%>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
 <%
-    String identityServerEndpointContextParam = application.getInitParameter("IdentityServerEndpointContextURL");
+    final String identityServerEndpointContextParam = application.getInitParameter("IdentityServerEndpointContextURL");
     String samlssoURL = "../samlsso";
     String commonauthURL = "../commonauth";
     String oauth2AuthorizeURL = "../oauth2/authorize";
