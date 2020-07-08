@@ -1,0 +1,65 @@
+C:\dev\jdk8u172-b11\bin\java.exe -Dmaven.multiModuleProjectDirectory=C:\dev\workspace\mifos\openbanking-api-gateway -Dmaven.home=C:\Users\Tamas\.m2\wrapper\dists\apache-maven-3.6.0-bin\2dakv70gp803gtm5ve1ufmvttn\apache-maven-3.6.0 -Dclassworlds.conf=C:\Users\Tamas\.m2\wrapper\dists\apache-maven-3.6.0-bin\2dakv70gp803gtm5ve1ufmvttn\apache-maven-3.6.0\bin\m2.conf -Dmaven.ext.class.path=C:\Users\Tamas\AppData\Local\JetBrains\Toolbox\apps\IDEA-U\ch-1\202.6109.22\plugins\maven\lib\maven-event-listener.jar -javaagent:C:\Users\Tamas\AppData\Local\JetBrains\Toolbox\apps\IDEA-U\ch-1\202.6109.22\lib\idea_rt.jar=55713:C:\Users\Tamas\AppData\Local\JetBrains\Toolbox\apps\IDEA-U\ch-1\202.6109.22\bin -Dfile.encoding=UTF-8 -classpath C:\Users\Tamas\.m2\wrapper\dists\apache-maven-3.6.0-bin\2dakv70gp803gtm5ve1ufmvttn\apache-maven-3.6.0\boot\plexus-classworlds-2.5.2.jar org.codehaus.classworlds.Launcher -Didea.version=2020.2 org.apache.maven.plugins:maven-dependency-plugin:2.8:tree
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --< org.wso2.carbon.identity.framework:dpc.org.wso2.carbon.identity.application.authentication.endpoint >--
+[INFO] Building WSO2 Carbon - Identity Application Authentication Endpoint 5.12.153
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dpc.org.wso2.carbon.identity.application.authentication.endpoint ---
+[INFO] org.wso2.carbon.identity.framework:dpc.org.wso2.carbon.identity.application.authentication.endpoint:war:5.12.153
+[INFO] +- commons-lang.wso2:commons-lang:jar:2.6.0.wso2v1:compile
+[INFO] +- javax.servlet:servlet-api:jar:2.5:provided
+[INFO] +- javax.servlet:jsp-api:jar:2.0:provided
+[INFO] +- wsdl4j:wsdl4j:jar:1.6.3:compile
+[INFO] +- commons-codec.wso2:commons-codec:jar:1.4.0.wso2v1:compile
+[INFO] +- org.apache.ws.commons.axiom:axiom-api:jar:1.2.11-wso2v10:compile
+[INFO] |  +- org.apache.geronimo.specs:geronimo-activation_1.1_spec:jar:1.0.2:compile
+[INFO] |  +- org.apache.geronimo.specs:geronimo-javamail_1.4_spec:jar:1.6:compile
+[INFO] |  +- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  \- org.apache.geronimo.specs:geronimo-stax-api_1.0_spec:jar:1.0.1:compile
+[INFO] +- org.apache.ws.commons.axiom:axiom-impl:jar:1.2.11:compile
+[INFO] |  \- org.codehaus.woodstox:wstx-asl:jar:3.2.9:compile
+[INFO] +- commons-cli:commons-cli:jar:1.0:compile
+[INFO] +- jaxen:jaxen:jar:1.1.6:compile
+[INFO] +- javax.ws.rs:javax.ws.rs-api:jar:2.0-m10:compile
+[INFO] +- com.google.code.gson:gson:jar:2.7:compile
+[INFO] +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.application.authentication.endpoint.util:jar:5.12.153:compile
+[INFO] |  \- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.user.registration.stub:jar:5.12.153:compile
+[INFO] +- org.wso2.carbon:org.wso2.carbon.user.core:jar:4.4.35:compile
+[INFO] |  \- org.wso2.carbon:org.wso2.carbon.user.api:jar:4.4.35:compile
+[INFO] +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.core:jar:5.12.153:compile
+[INFO] +- org.wso2.carbon.identity.framework:org.wso2.carbon.identity.base:jar:5.12.153:compile
+[INFO] +- org.wso2.securevault:org.wso2.securevault:jar:1.0.0-wso2v2:compile
+[INFO] |  +- log4j:log4j:jar:1.2.14:compile
+[INFO] |  +- jline:jline:jar:0.9.94:compile
+[INFO] |  |  \- junit:junit:jar:3.8.1:compile
+[INFO] |  \- commons-io:commons-io:jar:2.0:compile
+[INFO] +- org.wso2.orbit.org.owasp.encoder:encoder:jar:1.2.0.wso2v1:compile
+[INFO] +- org.owasp.encoder:encoder-jsp:jar:1.2.1:compile
+[INFO] |  \- org.owasp.encoder:encoder:jar:1.2.1:compile
+[INFO] +- org.wso2.orbit.org.apache.cxf:cxf-bundle:jar:2.7.16.wso2v1:compile
+[INFO] +- org.wso2.orbit.org.apache.httpcomponents:httpclient:jar:4.3.6.wso2v2:compile
+[INFO] +- org.apache.httpcomponents.wso2:httpcore:jar:4.3.3.wso2v1:compile
+[INFO] +- org.json.wso2:json:jar:3.0.0.wso2v1:compile
+[INFO] +- org.apache.taglibs:taglibs-standard-impl:jar:1.2.5:compile
+[INFO] +- org.apache.axis2.wso2:axis2:jar:1.6.1-wso2v28:compile
+[INFO] +- org.codehaus.jettison.wso2:jettison:jar:1.3.4.wso2v1:compile
+[INFO] +- org.wso2.carbon:org.wso2.carbon.ui:jar:4.4.35:compile
+[INFO] +- org.wso2.carbon:org.wso2.carbon.utils:jar:4.4.35:compile
+[INFO] +- org.apache.neethi:neethi:jar:3.0.3:compile
+[INFO] +- org.wso2.orbit.org.opensaml:opensaml:jar:2.6.4.wso2v3:compile
+[INFO] +- org.wso2.carbon:org.wso2.carbon.base:jar:4.4.35:compile
+[INFO] +- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-core:jar:2.9.9:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-databind:jar:2.9.9:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-annotations:jar:2.9.9:compile
+[INFO] +- com.google.code.findbugs:jsr305:jar:3.0.2:compile
+[INFO] +- org.jetbrains:annotations:jar:17.0.0:compile
+[INFO] +- io.swagger:swagger-annotations:jar:1.5.0:compile
+[INFO] \- javax.validation:com.springsource.javax.validation:jar:1.0.0.GA:compile
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.182 s
+[INFO] Finished at: 2020-07-08T12:00:31+02:00
+[INFO] ------------------------------------------------------------------------

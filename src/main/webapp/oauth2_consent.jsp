@@ -410,17 +410,21 @@
                                 </h5>
                                 <div class="border-gray margin-bottom-double">
                                     <div class="padding">
-                                        <strong>Consent Id:</strong> <%=Encode.forHtml(accountsConsentResult.getData().getConsentId())%><br/>
-                                        <strong>Transaction from time:</strong> <%=Encode.forHtml(accountsConsentResult.getData().getTransactionFromDateTime())%>
+                                        <strong>Consent
+                                            Id:</strong> <%=Encode.forHtml(accountsConsentResult.getData().getConsentId())%>
                                         <br/>
-                                        <strong>Transaction to time:</strong> <%=Encode.forHtml(accountsConsentResult.getData().getTransactionToDateTime())%>
+                                        <strong>Transaction from
+                                            time:</strong> <%=Encode.forHtml(accountsConsentResult.getData().getTransactionFromDateTime())%>
+                                        <br/>
+                                        <strong>Transaction to
+                                            time:</strong> <%=Encode.forHtml(accountsConsentResult.getData().getTransactionToDateTime())%>
                                         <br/>
                                         <strong>Permissions:</strong><br/>
                                         <ul class="scopes-list padding">
                                             <% final List<OBReadConsentResponse1Data.PermissionsEnum> consentPermissions = accountsConsentResult.getData().getPermissions();
                                                 if (null != consentPermissions) {
-                                                for (int ii = 0; ii < consentPermissions.size(); ii++) {
-                                                    final String permission = consentPermissions.get(ii).toString();%>
+                                                    for (int ii = 0; ii < consentPermissions.size(); ii++) {
+                                                        final String permission = consentPermissions.get(ii).toString();%>
                                             <li><%=Encode.forHtml(permission)%>
                                             </li>
                                             <%
@@ -469,15 +473,21 @@
                                 <%{%>
                                 <div class="border-gray margin-bottom-double">
                                     <div class="padding">
-                                        <strong>Consent Id:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getConsentId())%><br/>
-                                        <strong>Status:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getStatus().toString())%><br/>
-                                        <strong>Amount:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getInstructedAmount().getAmount())%>&nbsp;<%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getInstructedAmount().getCurrency())%><br/>
+                                        <strong>Consent
+                                            Id:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getConsentId())%>
+                                        <br/>
+                                        <strong>Status:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getStatus().toString())%>
+                                        <br/>
+                                        <strong>Amount:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getInstructedAmount().getAmount())%>&nbsp;<%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getInstructedAmount().getCurrency())%>
+                                        <br/>
                                         <br/>
                                         <strong>Debtor Account:</strong><br/>
                                         <ul class="scopes-list padding">
-                                            <li><strong>Scheme name:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getSchemeName())%>
+                                            <li><strong>Scheme
+                                                name:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getSchemeName())%>
                                             </li>
-                                            <li><strong>Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getIdentification())%>
+                                            <li>
+                                                <strong>Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getDebtorAccount().getIdentification())%>
                                             </li>
                                             <% String content = paymentsConsentResult.getData().getInitiation().getDebtorAccount().getName();
                                                 if (!hu.dpc.common.http.StringUtils.isNullOrEmpty(content)) { %>
@@ -493,11 +503,14 @@
                                         <br/>
                                         <strong>Creditor Account:</strong><br/>
                                         <ul class="scopes-list padding">
-                                            <li><strong>Scheme name:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getSchemeName())%>
+                                            <li><strong>Scheme
+                                                name:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getSchemeName())%>
                                             </li>
-                                            <li><strong>Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getIdentification())%>
+                                            <li>
+                                                <strong>Identification:</strong> <%=Encode.forHtml(paymentsConsentResult.getData().getInitiation().getCreditorAccount().getIdentification())%>
                                             </li>
-                                            <% content = paymentsConsentResult.getData().getInitiation().getCreditorAccount().getName();
+                                            <%
+                                                content = paymentsConsentResult.getData().getInitiation().getCreditorAccount().getName();
                                                 if (!hu.dpc.common.http.StringUtils.isNullOrEmpty(content)) { %>
                                             <li><strong>Name:</strong> <%=Encode.forHtml(content)%>
                                             </li>

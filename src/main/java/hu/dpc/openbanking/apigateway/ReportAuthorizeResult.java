@@ -2,8 +2,6 @@ package hu.dpc.openbanking.apigateway;
 
 import hu.dpc.openbanking.apigateway.entities.accounts.UpdateConsentResponse;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1;
 import uk.org.openbanking.v3_1_2.accounts.OBReadConsentResponse1Data;
 import uk.org.openbanking.v3_1_2.commons.Account;
@@ -16,26 +14,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReportAuthorizeResult extends HttpServlet {
-    private static final Log LOG = LogFactory.getLog(ReportAuthorizeResult.class);
+    private static final long serialVersionUID = -6738226448116383118L;
+
+    private static void debug(final String str) {
+        System.out.println(str);
+    }
+
+    private static void writeResponse(final HttpServletResponse resp, final String content) throws IOException {
+        resp.getWriter().println(content);
+    }
 
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse resp) throws IOException {
+        debug("Called: ReportAuthorizeResult");
         try {
+            resp.setContentType("text/plain");
+            resp.setCharacterEncoding("utf-8");
+
             final String jsonResult = IOUtils.toString(request.getInputStream());
-            System.out.println("Content: \n" + jsonResult);
+            debug("Content:\n" + jsonResult);
 
             final RequestContent requestContent = new RequestContent(request);
+            requestContent.debug();
 
-            final boolean hasParams = (requestContent.hasLoggedInUser() && requestContent.hasTppClientId() && !requestContent.getAccounts().isEmpty());
+            final boolean hasParams = (requestContent.hasLoggedInUser() && requestContent.hasTppClientId());
             if (!hasParams) {
+                debug("No hasParams! Return status 500!");
                 resp.setStatus(500);
+                return;
             }
 
-            final OBReadConsentResponse1 consentResultFromSession = (OBReadConsentResponse1) request.getSession().getValue("AccountConsent");
+            final OBReadConsentResponse1 consentResultFromSession = (OBReadConsentResponse1) request.getSession().getAttribute("AccountConsent");
             if (null == consentResultFromSession) {
-                System.out.println("ConsentResult in session is null");
+                debug("ConsentResult in session is null");
             } else {
-                System.out.println("ConsentResult in session is not null");
+                debug("ConsentResult in session is not null");
             }
 
             final OBReadConsentResponse1 updateConsentRequest = new OBReadConsentResponse1();
@@ -62,26 +75,33 @@ public class ReportAuthorizeResult extends HttpServlet {
 
             final UpdateConsentResponse result;
             final String actionScope = requestContent.getActionScope();
+            debug("actionScope: " + actionScope);
             if ("accounts".equals(actionScope)) {
-                result = FineractGatewayAccounts.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
+                result = FineractGatewayAccounts.updateConsent(this.getServletConfig(),
+                        requestContent.getConsentId(),
+                        requestContent.getLoggedInUser(),
+                        updateConsentRequest);
             } else if ("payments".equals(actionScope)) {
-                result = FineractGatewayPayments.updateConsent(this.getServletConfig(), requestContent.getConsentId(), requestContent.getLoggedInUser(), updateConsentRequest);
+                result = FineractGatewayPayments.updateConsent(this.getServletConfig(),
+                        requestContent.getConsentId(),
+                        requestContent.getLoggedInUser(),
+                        updateConsentRequest);
             } else {
+                debug("Unknown action scope: " + actionScope);
                 result = new UpdateConsentResponse();
                 result.setResponseCode(500);
                 result.setRawResponse("Unknown action scope: " + actionScope);
             }
             final boolean isSuccess = 200 == result.getResponseCode();
+            debug("Response code: " + result.getResponseCode());
             resp.setStatus(isSuccess ? 200 : 500);
-            resp.setContentType("text/plain");
-            resp.setCharacterEncoding("utf-8");
             if (!isSuccess) {
-                resp.getWriter().println(result.getRawResponse());
+                writeResponse(resp, result.getRawResponse());
             }
         } catch (final Exception e) {
-            LOG.warn("Error while update consent", e);
+            debug("Error while update consent! Return status 500!");
+            e.printStackTrace(resp.getWriter());
             resp.setStatus(500);
         }
-
     }
 }

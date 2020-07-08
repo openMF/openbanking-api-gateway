@@ -21,12 +21,12 @@
 <%@include file="init-url.jsp" %>
 
 <%
-    String errorCode = request.getParameter("oauthErrorCode");
-    String errorMsg = request.getParameter("oauthErrorMsg");
-    String regex = "application=";
+    final String errorCode = request.getParameter("oauthErrorCode");
+    final String errorMsg = request.getParameter("oauthErrorMsg");
+    final String regex = "application=";
     String errorMsgContext = errorMsg;
     String errorMsgApp = "";
-    String[] error = errorMsg.split(regex);
+    final String[] error = errorMsg.split(regex);
     if (error.length > 1) {
         errorMsgContext = errorMsg.split(regex)[0] + regex;
         errorMsgApp = errorMsg.split(regex)[1];
@@ -97,7 +97,8 @@
 
                 <div class="boarder-all ">
                     <div class="clearfix"></div>
-                    <form action="<%=commonauthURL%> method="post" id="oauth2_authz" name="oauth2_authz" class="form-horizontal" >
+                    <form action="<%=commonauthURL%>" method="post" id="oauth2_authz" name="oauth2_authz"
+                          class="form-horizontal">
                         <div class="padding-double login-form">
                             <div id="workArea">
                                 <table>
